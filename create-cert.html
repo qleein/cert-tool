@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>X.509 Certificate Creater</title>
+
+    <script src="common.js"></script>
+    <script src="asn1.js"></script>
+    <script src="x509_schema.js"></script>
+    <script src="x509_simpl.js"></script>
+
+    <style type="text/css">
+        body{background:#EFEFEF;font:normal 14px/16px Helvetica, Arial, sans-serif;}
+        .wrapper{
+            width:600px;
+            margin:50px auto;
+            padding:50px;
+            border:solid 2px #CCC;
+            border-radius:10px;
+            -webkit-border-radius:10px;
+            box-shadow:0 0 12px 3px #CDCDCD;
+            -webkit-box-shadow:0 0 12px 3px #CDCDCD;
+            background:#FFF;
+        }
+        label{
+            font:bold 16px/20px Helvetica, Arial, sans-serif;
+            margin:0 0 8px;
+        }
+        textarea{
+            width:500px;
+            border:solid 1px #999;
+            border-radius:5px;
+            -webkit-border-radius:5px;
+            height:340px;
+            font:normal 12px/15px monospace;
+            display:block;
+            margin:0 0 12px;
+            box-shadow:0 0 5px 5px #EFEFEF inset;
+            -webkit-box-shadow:0 0 5px 5px #EFEFEF inset;
+            padding:20px;
+           resize: none;
+        }
+        a{
+            display:inline-block;
+            padding:5px 15px;
+            background:#ACD0EC;
+            border:solid 1px #4C6181;
+            color:#000;
+            font:normal 14px/16px Helvetica, Arial, sans-serif;
+        }
+        a:hover{
+            background:#DAEBF8;
+            cursor:pointer;
+        }
+        .header-block {
+            margin-top:30px;
+            font:bold 16px/20px Helvetica, Arial, sans-serif;
+        }
+        .border-block{
+            border:solid 2px #999;
+            border-radius:5px;
+            -webkit-border-radius:5px;
+            margin:10px 0 0;
+            padding:20px 30px;
+            background:#F0F4FF;
+        }
+        .border-block h2{
+            margin:0 0 16px;
+            font:bold 22px/24px Helvetica, Arial, sans-serif;
+        }
+        .border-block p{
+            margin:0 0 12px;
+        }
+        .border-block p .type{
+            font-weight:bold;
+            display:inline-block;
+            width:176px;
+        }
+        .border-block .two-col{
+            overflow:hidden;
+            margin:0 0 16px;
+        }
+        .border-block .two-col .subject{
+            width:180px;
+            font-weight:bold;
+            margin:0 0 12px;
+            float:left;
+        }
+        .border-block .two-col #cert-attributes{
+            margin:0;
+            padding:0;
+            float:left;
+            list-style:none;
+        }
+        .border-block .two-col #cert-attributes li p{
+            margin:0;
+        }
+        .border-block .two-col #cert-attributes li p span{
+            width:40px;
+            display:inline-block;
+            margin:0 0 5px;
+        }
+        .border-block .two-col #cert-exten{
+            overflow:hidden;
+            padding:0 0 0 17px;
+            margin:0;
+            list-style-type:square;
+        }
+        table {
+            border:solid;
+            border-collapse:collapse;
+            border-color:black;
+        }
+       th {
+        text-align:center;
+        background: #ccc;
+        padding: 5px;
+        border: 1px solid black;
+       }
+       td {
+        padding: 5px;
+        border: 1px solid black;
+       }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+    <p class="header-block">How To Sign Certificate</p2>
+    <div class="border-block">
+        <form>
+            <input type="radio" name="whereisca" value="self-signed" checked onClick="handleWhereIsCA()"><label>self-signed</label>
+            <input type="radio" name="whereisca" value="upload" onClick="handleWhereIsCA()"><label>upload</label>
+            <input type="radio" name="whereisca" value="new" onClick="handleWhereIsCA()"><label>create new</label>
+        </form>
+
+        <hr />
+
+        <div id="self-signed">
+            <h3>Self signed</h3>
+        </div>
+
+        <div id="upload-ca" style="display:none">
+            <h3>Upload CA certificate and privatekey</h3>
+            <p>
+                <label for="ca-cert-file">Select CA cert:</label>
+                <input type="file" id="ca-cert-file" title="CA certificate" onChange="handleFileCACert(this)">
+            </p>
+            <p>
+                <label for="ca-private-key-file">Select CA privkey:</label>
+                <input type="file" id="ca-private-key-file" title="CA certificate" onChange="handleFileCAPrivateKey(this)">
+            </p>
+        </div>
+
+
+        <div id="create-ca" style="display:none">
+            <h3>Create new CA certificate</h3>
+            <section id="user-information">
+                <table>
+                    <tr>
+                        <td><label for="ca-common-name">Common Name:</label></td>
+                        <td><input type="text" id="ca-common-name"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-organization">Organization Name:</label></td>
+                        <td><input type="text" id="ca-organization"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-organization-unit">Organization Unit Name:</label></td>
+                        <td><input type="text" id="ca-organization-unit"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-country-code">Country Name:</label></td>
+                        <td><input type="text" id="ca-country-code" maxlength="2"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-state-name">State or Province Name:</label></td>
+                        <td><input type="text" id="ca-state-name"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-locality-name">Locality Name:</label></td>
+                        <td><input type="text" id="ca-locality-name"/></td>
+                    </tr>
+                </table>
+                <a id="ca-create-certificate" style="margin:20px 0px 0px;" onClick="createCACert()">Create CA Certificate</a>
+            </section>
+
+            <section id="ca-certificate">
+                <h1>Certificate in PEM Format</h1>
+                <a id="ca-certificate-download" download="ca.cert">Download Certificate</a>
+                <pre id="ca-cert-pem"></pre>
+            </section>
+
+            <section id="ca-private-key">
+                <h1>Private Key in PEM Format</h1>
+                <a id="ca-private-key-download" download="ca.key">Download Private Key</a>
+                <pre id="ca-private-key-pem"></pre>
+            </section>
+        </div>
+    </div>
+
+    <p class="header-block">Create Certificate</p>
+    <div id="certificate-block" class="border-block">
+        <h1>Create Certificate</h1>
+
+        <section id="cert-information">
+            <table>
+                <tr>
+                    <td><label for="common-name">Common Name:</label></td>
+                    <td><input type="text" id="common-name"/></td>
+                </tr>
+                <tr>
+                    <td><label for="organization">Organization:</label></td>
+                    <td><input type="text" id="organization"/></td>
+                </tr>
+                <tr>
+                    <td><label for="organization-unit">Organization Unit:</label></td>
+                    <td><input type="text" id="organization-unit"/></td>
+                </tr>
+                <tr>
+                    <td><label for="country-code">Country Code:</label></td>
+                    <td><input type="text" id="country-code" maxlength="2"/></td>
+                </tr>
+                <tr>
+                    <td><label for="state-name">State or Province Name:</label></td>
+                    <td><input type="text" id="state-name"/></td>
+                </tr>
+                <tr>
+                    <td><label for="locality-name">Locality Name:</label></td>
+                    <td><input type="text" id="locality-name"/></td>
+                </tr>
+            </table>
+            <a id="create-certificate" style="margin:20px 0px 0px" onClick="createCert()">Create Certificate</button></a>
+        </section>
+
+        <section id="certificate">
+            <h1>Certificate in PEM Format</h1>
+            <a id="certificate-download" download="certificate.pem">Download Certificate</a>
+            <pre id="certificate-pem"></pre>
+        </section>
+
+        <section id="private-key">
+            <h1>Private Key in PEM Format</h1>
+            <a id="private-key-download" download="privatekey.pem">Download Private Key</a>
+            <pre id="private-key-pem"></pre>
+        </section>
+    </div>
+</div>
+
+    <script src="certs.js"></script>
+</body>
+</html>
