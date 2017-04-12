@@ -102,7 +102,7 @@ function handleFileCACert(input) {
 function handleFileCAPrivateKey(input) {
     const tempReader = new FileReader();
     const currentFiles = input.files;
-    console.log("file: ", currentFiles[0]);
+
     tempReader.onload =
         function(event)
         {
@@ -122,7 +122,6 @@ function handleFileCAPrivateKey(input) {
             ).
             then(function(privatekey) {
                 CACertificateInfo.upload.privateKey = privatekey;
-
                 window.crypto.subtle.exportKey('pkcs8', privatekey).
                 then(function(spki) {
                     var pemPublicKey = convertBinaryToPem(spki, "PRIVATE KEY");
@@ -130,6 +129,9 @@ function handleFileCAPrivateKey(input) {
                     //document.getElementById("ca-private-key-pem").textContent = pemPublicKey;
                     //document.getElementById("ca-private-key-download").setAttribute("href", pemUrl);
                 })
+            }) .
+            catch(function(err) {
+                console.log("Error parse privatekey: " + err.message);
             });
 
             console.log("OK END");
@@ -240,9 +242,9 @@ function createCert() {
     ).
     then(function(newKeyPair) {
         keyPair = newKeyPair;
-        if (CACert.subject && CACert.privateKey)
+        if (CACert.subject && CACert.privateKey) {
             return buildCertificateObject(names, keyPair, CACert.subject, CACert.privateKey);
-        else
+        } else
             return buildCertificateObject(names, keyPair, names, keyPair.privateKey);
     }) .
     then(function(cert) {
@@ -443,17 +445,24 @@ function convertBinaryToPem(binaryData, label) {
 
 function pemToDer(pem, label) {
     var pemString = String.fromCharCode.apply(null, new Uint8Array(pem));
-    if (label == "certificate") {
-        pemString = pemString.replace(/-----BEGIN CERTIFICATE-----\r?\n/, "");
-        pemString = pemString.replace(/-----END CERTIFICATE-----/, "");
-    } else if (label == "privatekey") {
-        pemString = pemString.replace(/-----BEGIN RSA PRIVATE KEY-----\r?\n/, "");
-        pemString = pemString.replace(/-----END RSA PRIVATE KEY-----/, "");
+	var isOpensslPrivateKey = false;
 
-        pemString = pemString.replace(/-----BEGIN PRIVATE KEY-----\r?\n/, "");
-        pemString = pemString.replace(/-----END PRIVATE KEY-----/, "");
+    if (label == "certificate") {
+        var res = pemString.match(/-----BEGIN CERTIFICATE-----([a-zA-Z0-9+/=\n]*?)-----END CERTIFICATE-----/m);
+        pemString = res[1]
+    } else if (label == "privatekey") {
+        var res = pemString.match(/-----BEGIN RSA PRIVATE KEY-----([a-zA-Z0-9+/=\n]*?)-----END RSA PRIVATE KEY-----/m);
+        if (res) {
+            isOpensslPrivateKey = true;
+            pemString = res[1];
+        } else {
+            res = pemString.match(/-----BEGIN PRIVATE KEY-----([a-zA-Z0-9+/=\n]*?)-----END PRIVATE KEY-----/m);
+            pemString = res[1];
+        }
     }
-    pemString = pemString.replace(/\n/g, "");
+
+    // base64 decode
+	pemString = pemString.replace(/\n/g, "");
     var derString = atob(pemString);
 
     // String to ArrayBuffer
@@ -464,7 +473,17 @@ function pemToDer(pem, label) {
         bufView[i] = derString.charCodeAt(i);
     }
 
-    return buf
+    if (!isOpensslPrivateKey) {
+        return buf;
+    }
+    
+    // Convert openssl format privatekey to pkcs#8 format
+    var pkcs8 = new org.pkijs.simpl.PKCS8();
+    pkcs8.version = 0;
+    pkcs8.privateKeyAlgorithm = new org.pkijs.simpl.ALGORITHM_IDENTIFIER({algorithm_id:"1.2.840.113549.1.1.1", algorithm_params: new org.pkijs.asn1.NULL()})
+    pkcs8.privateKey = new org.pkijs.asn1.OCTETSTRING({value_hex:buf});
+    var buf2 = pkcs8.toSchema(true).toBER(false);
+    return buf2
 }
 
 function extract_entity(entity) {
