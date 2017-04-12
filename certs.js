@@ -285,6 +285,18 @@ function buildCACertificateObject(names, keyPair) {
         then(function() {return cert});
 }
 
+function getSubjectAltNames() {
+    var names = new Array();
+    names.push("baidu.com");
+    names.push("baidu.cn");
+
+    var elem = document.getElementById("subject-alt-name");
+    var str = elem.value.toLowerCase();
+    var strs = str.split(/[ ,]+/);
+
+    return strs;
+}
+
 
 // Returns a Promise yielding the certificate object
 function buildCertificateObject(subject, keyPair, issuer, issuerPrivateKey) {
@@ -297,6 +309,11 @@ function buildCertificateObject(subject, keyPair, issuer, issuerPrivateKey) {
 
     setValidityPeriod(cert, new Date(), 365);  // Good from today for 730 days
     setEmptyExtensions(cert);
+
+    var names = getSubjectAltNames();
+    if (names) {
+        setAltName(cert, names);
+    }
     //setAltName(cert);
     setCABit(cert, false);
     //setKeyUsage(cert, true, true, true, false, false, false, false); // digitalSignature, nonRepudiation, keyCertSign, cRLSign
@@ -369,18 +386,17 @@ function setKeyUsage(cert, digitalSignature, nonRepudiation, keyEncipherment, da
     }));
 }
 
-function setAltName(cert) {
-    var extKeyUsage = new org.pkijs.simpl.x509.AltName({
-        altNames: [ new org.pkijs.simpl.GENERAL_NAME({value: "test.com"})]
-    })
-
+function setAltName(cert, names) {
+    var generalNames = new Array();
+    for (var i = 0; i < names.length; i++) {
+        generalNames.push(new org.pkijs.simpl.GENERAL_NAME({
+            NameType: 2,
+            Name: names[i]
+        }));
+    }
+    
     var altNames = new org.pkijs.simpl.GENERAL_NAMES({
-        names: [
-            new org.pkijs.simpl.GENERAL_NAME({
-                NameType: 2,
-                Name: "test.com"
-            })
-        ]
+        names: generalNames
     })
     cert.extensions.push(new org.pkijs.simpl.EXTENSION({
         extnID: "2.5.29.17",
