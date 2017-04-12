@@ -277,7 +277,7 @@ function buildCACertificateObject(names, keyPair) {
     setCABit(cert, true, 2);
     //setKeyUsage(cert, digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, cRLSign)
     //setKeyUsage(cert, true, true, true, false, false, false, false);
-    //setKeyUsage(cert, true, false, false, false, false, false, false);
+    setKeyUsage(cert, false, false, false, false, false, true, false);
 
     setSignatureAlgorithm(cert, "1.2.840.113549.1.1.11");
     return setPublicKey(cert, keyPair.publicKey).
