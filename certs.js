@@ -59,7 +59,7 @@ function handleWhereIsCA(evt) {
         } else if (radio[i].value == "new"){
             elem = document.getElementById("create-ca");
             elem.style.display = "block";
-            CACertificateInfo.type = "create";
+            CACertificateInfo.type = "created";
         } else {
             CACertificateInfo.type = "self-signed";
             elem = document.getElementById("self-signed");
@@ -157,7 +157,6 @@ function createCACert() {
         organizationName: organization,
         organizationUnitName: organizationUnit,
     }
-    console.log("ca names:", names);
 
     var keyPair;
     window.crypto.subtle.generateKey(
@@ -175,8 +174,7 @@ function createCACert() {
         return buildCACertificateObject(names, keyPair);
     }) .
     then(function(cert) {
-        CACertificateInfo = {
-            type: "created",
+        CACertificateInfo.created = {
             subject: names,
             publicKey: keyPair.publicKey,
             privateKey: keyPair.privateKey,
@@ -278,7 +276,8 @@ function buildCACertificateObject(names, keyPair) {
     setEmptyExtensions(cert);
     setCABit(cert, true, 2);
     //setKeyUsage(cert, digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, cRLSign)
-    setKeyUsage(cert, true, true, true, false, false, false, false);
+    //setKeyUsage(cert, true, true, true, false, false, false, false);
+    //setKeyUsage(cert, true, false, false, false, false, false, false);
 
     setSignatureAlgorithm(cert, "1.2.840.113549.1.1.11");
     return setPublicKey(cert, keyPair.publicKey).
@@ -476,7 +475,7 @@ function pemToDer(pem, label) {
     if (!isOpensslPrivateKey) {
         return buf;
     }
-    
+
     // Convert openssl format privatekey to pkcs#8 format
     var pkcs8 = new org.pkijs.simpl.PKCS8();
     pkcs8.version = 0;

@@ -4,39 +4,39 @@
  *
  * Author 2014, Yury Strozhevsky <www.strozhevsky.com>.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright notice, 
+ * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  *
- * 3. Neither the name of the copyright holder nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software without 
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
- * OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
  *
  */
 (
 function(in_window)
 {
     //**************************************************************************************
-    // #region Declaration of global variables 
+    // #region Declaration of global variables
     //**************************************************************************************
-    // #region "org" namespace 
+    // #region "org" namespace
     if(typeof in_window.org === "undefined")
         in_window.org = {};
     else
@@ -44,9 +44,9 @@ function(in_window)
         if(typeof in_window.org !== "object")
             throw new Error("Name org already exists and it's not an object");
     }
-    // #endregion 
+    // #endregion
 
-    // #region "org.pkijs" namespace 
+    // #region "org.pkijs" namespace
     if(typeof in_window.org.pkijs === "undefined")
         in_window.org.pkijs = {};
     else
@@ -54,9 +54,9 @@ function(in_window)
         if(typeof in_window.org.pkijs !== "object")
             throw new Error("Name org.pkijs already exists and it's not an object" + " but " + (typeof in_window.org.pkijs));
     }
-    // #endregion 
+    // #endregion
 
-    // #region "org.pkijs.simpl" namespace 
+    // #region "org.pkijs.simpl" namespace
     if(typeof in_window.org.pkijs.simpl === "undefined")
         in_window.org.pkijs.simpl = {};
     else
@@ -64,9 +64,9 @@ function(in_window)
         if(typeof in_window.org.pkijs.simpl !== "object")
             throw new Error("Name org.pkijs.simpl already exists and it's not an object" + " but " + (typeof in_window.org.pkijs.simpl));
     }
-    // #endregion 
+    // #endregion
 
-    // #region "org.pkijs.simpl.x509" namespace 
+    // #region "org.pkijs.simpl.x509" namespace
     if(typeof in_window.org.pkijs.simpl.x509 === "undefined")
         in_window.org.pkijs.simpl.x509 = {};
     else
@@ -74,29 +74,29 @@ function(in_window)
         if(typeof in_window.org.pkijs.simpl.x509 !== "object")
             throw new Error("Name org.pkijs.simpl.x509 already exists and it's not an object" + " but " + (typeof in_window.org.pkijs.simpl.x509));
     }
-    // #endregion 
+    // #endregion
 
-    // #region "local" namespace 
+    // #region "local" namespace
     var local = {};
-    // #endregion   
+    // #endregion
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "Time" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.TIME =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.type = 0; // 0 - UTCTime; 1 - GeneralizedTime; 2 - empty value
         this.value = new Date(0, 0, 0);
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.TIME.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -105,13 +105,13 @@ function(in_window)
                 this.value = (arguments[0].value || (new Date(0, 0, 0)));
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.TIME.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.TIME({
@@ -124,9 +124,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for TIME");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("utcTimeName" in asn1.result)
         {
             this.type = 0;
@@ -137,13 +137,13 @@ function(in_window)
             this.type = 1;
             this.value = asn1.result.generalTimeName.toDate();
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.TIME.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         var result = {};
 
         if(this.type === 0)
@@ -152,7 +152,7 @@ function(in_window)
             result = new in_window.org.pkijs.asn1.GENERALIZEDTIME({ value_date: this.value });
 
         return result;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.TIME.prototype.toJSON =
@@ -164,23 +164,23 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
-    // #region Simplified structure for "GeneralName" type 
+    // #region Simplified structure for "GeneralName" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAME =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.NameType = 9; // Name type - from a tagged value (0 for "otherName", 1 for "rfc822Name" etc.)
         this.Name = {};
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.GENERAL_NAME.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -189,13 +189,13 @@ function(in_window)
                 this.Name = arguments[0].Name || {};
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAME.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.GENERAL_NAME({
@@ -220,7 +220,7 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for GENERAL_NAME");
-        // #endregion 
+        // #endregion
 
         // #region Get internal properties from parsed schema
         this.NameType = asn1.result["block_name"].id_block.tag_number;
@@ -270,7 +270,7 @@ function(in_window)
                 break;
             default:;
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAME.prototype.toSchema =
@@ -337,7 +337,7 @@ function(in_window)
             default:
                 return in_window.org.pkijs.schema.GENERAL_NAME();
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAME.prototype.toJSON =
@@ -355,22 +355,22 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
-    // #region Simplified structure for "GeneralNames" type 
+    // #region Simplified structure for "GeneralNames" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAMES =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.names = new Array(); // Array of "org.pkijs.simpl.GENERAL_NAME"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.GENERAL_NAMES.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -378,13 +378,13 @@ function(in_window)
                 this.names = arguments[0].names || new Array(); // Array of "org.pkijs.simpl.GENERAL_NAME"
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAMES.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             new in_window.org.pkijs.asn1.SEQUENCE({
@@ -399,14 +399,14 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for GENERAL_NAMES");
-        // #endregion 
+        // #endregion
 
         // #region Get internal properties from parsed schema
         var n = asn1.result["names"];
 
         for(var i = 0; i < n.length; i++)
             this.names.push(new in_window.org.pkijs.simpl.GENERAL_NAME({ schema: n[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAMES.prototype.toSchema =
@@ -421,7 +421,7 @@ function(in_window)
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.GENERAL_NAMES.prototype.toJSON =
@@ -437,23 +437,23 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
-    // #region Simplified structure for "AlgorithmIdentifier" type 
+    // #region Simplified structure for "AlgorithmIdentifier" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.algorithm_id = "";
         // OPTIONAL this.algorithm_params = new in_window.org.pkijs.asn1.NULL();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -463,16 +463,16 @@ function(in_window)
                     this.algorithm_params = arguments[0].algorithm_params;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
-            in_window.org.pkijs.schema.ALGORITHM_IDENTIFIER({ 
+            in_window.org.pkijs.schema.ALGORITHM_IDENTIFIER({
                 names: {
                     algorithmIdentifier: "algorithm",
                     algorithmParams: "params"
@@ -482,31 +482,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for ALGORITHM_IDENTIFIER");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.algorithm_id = asn1.result.algorithm.value_block.toString();
         if("params" in asn1.result)
             this.algorithm_params = asn1.result.params;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         output_array.push(new in_window.org.pkijs.asn1.OID({ value: this.algorithm_id }));
         if("algorithm_params" in this)
             output_array.push(this.algorithm_params);
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER.prototype.getCommonName =
@@ -527,23 +527,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "RSAPublicKey" type (RFC3447)
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPublicKey =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.modulus = new in_window.org.pkijs.asn1.INTEGER();
         this.publicExponent = new in_window.org.pkijs.asn1.INTEGER();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.RSAPublicKey.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -552,13 +552,13 @@ function(in_window)
                 this.publicExponent = arguments[0].publicExponent || new in_window.org.pkijs.asn1.INTEGER();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPublicKey.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.RSAPublicKey({
@@ -571,25 +571,25 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for RSAPublicKey");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.modulus = asn1.result["modulus"];
         this.publicExponent = asn1.result["publicExponent"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPublicKey.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 this.modulus,
                 this.publicExponent
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPublicKey.prototype.toJSON =
@@ -601,24 +601,24 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "OtherPrimeInfo" type (RFC3447)
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.OtherPrimeInfo =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.prime = new in_window.org.pkijs.asn1.INTEGER();
         this.exponent = new in_window.org.pkijs.asn1.INTEGER();
         this.coefficient = new in_window.org.pkijs.asn1.INTEGER();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.OtherPrimeInfo.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -628,13 +628,13 @@ function(in_window)
                 this.coefficient = arguments[0].coefficient || new in_window.org.pkijs.asn1.INTEGER();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.OtherPrimeInfo.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.OtherPrimeInfo({
@@ -648,19 +648,19 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for OtherPrimeInfo");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.prime = asn1.result["prime"];
         this.exponent = asn1.result["exponent"];
         this.coefficient = asn1.result["coefficient"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.OtherPrimeInfo.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 this.prime,
@@ -668,7 +668,7 @@ function(in_window)
                 this.coefficient
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.OtherPrimeInfo.prototype.toJSON =
@@ -681,14 +681,14 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "RSAPrivateKey" type (RFC3447)
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPrivateKey =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.version = 0;
         this.modulus = new in_window.org.pkijs.asn1.INTEGER();
         this.publicExponent = new in_window.org.pkijs.asn1.INTEGER();
@@ -699,13 +699,13 @@ function(in_window)
         this.exponent2 = new in_window.org.pkijs.asn1.INTEGER();
         this.coefficient = new in_window.org.pkijs.asn1.INTEGER();
         // OPTIONAL this.otherPrimeInfos = new Array(); // Array of "OtherPrimeInfo"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.RSAPrivateKey.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -723,13 +723,13 @@ function(in_window)
                     this.otherPrimeInfos = arguments[0].otherPrimeInfos || new Array();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPrivateKey.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.RSAPrivateKey({
@@ -750,9 +750,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for RSAPrivateKey");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.version = asn1.result["version"].value_block.value_dec;
         this.modulus = asn1.result["modulus"];
         this.publicExponent = asn1.result["publicExponent"];
@@ -770,13 +770,13 @@ function(in_window)
             for(var i = 0; i < otherPrimeInfos_array.length; i++)
                 this.otherPrimeInfos.push(new in_window.org.pkijs.simpl.x509.OtherPrimeInfo({ schema: otherPrimeInfos_array[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPrivateKey.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         output_array.push(new in_window.org.pkijs.asn1.INTEGER({ value: this.version }));
@@ -798,13 +798,13 @@ function(in_window)
 
             output_array.push(new in_window.org.pkijs.asn1.SEQUENCE({ value: otherPrimeInfos_array }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.RSAPrivateKey.prototype.toJSON =
@@ -833,23 +833,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
-    // #region Simplified structure for "SubjectPublicKeyInfo" type 
+    // #region Simplified structure for "SubjectPublicKeyInfo" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.PUBLIC_KEY_INFO =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.algorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER();
         this.subjectPublicKey = new in_window.org.pkijs.asn1.BITSTRING();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.PUBLIC_KEY_INFO.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -858,13 +858,13 @@ function(in_window)
                 this.subjectPublicKey = (arguments[0].subjectPublicKey || (new in_window.org.pkijs.asn1.BITSTRING()));
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PUBLIC_KEY_INFO.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.PUBLIC_KEY_INFO({
@@ -881,25 +881,25 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PUBLIC_KEY_INFO");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.algorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER({ schema: asn1.result.algorithm });
         this.subjectPublicKey = asn1.result.subjectPublicKey;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PUBLIC_KEY_INFO.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 this.algorithm.toSchema(),
                 this.subjectPublicKey
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PUBLIC_KEY_INFO.prototype.importKey =
@@ -907,30 +907,30 @@ function(in_window)
     {
         /// <param name="publicKey" type="Key">Public key to work with</param>
 
-        // #region Initial variables 
+        // #region Initial variables
         var sequence = Promise.resolve();
         var _this = this;
-        // #endregion   
+        // #endregion
 
-        // #region Initial check 
+        // #region Initial check
         if(typeof publicKey === "undefined")
             return new Promise(function(resolve, reject) { reject("Need to provide publicKey input parameter"); });
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Export public key 
+        // #region Export public key
         sequence = sequence.then(
             function()
             {
                 return crypto.exportKey("spki", publicKey);
             }
             );
-        // #endregion 
+        // #endregion
 
         // #region Initialize internal variables by parsing exported value
         sequence = sequence.then(
@@ -951,7 +951,7 @@ function(in_window)
                 return new Promise(function(resolve, reject) { reject("Error during exporting public key: " + error); });
             }
             );
-        // #endregion 
+        // #endregion
 
         return sequence;
     }
@@ -965,23 +965,23 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "AttributeTypeAndValue" type (part of RelativeDistinguishedName)
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTR_TYPE_AND_VALUE =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.type = "";
         this.value = {}; // ANY -- DEFINED BY AttributeType
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.ATTR_TYPE_AND_VALUE.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -990,13 +990,13 @@ function(in_window)
                 this.value = (arguments[0].value || {});
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTR_TYPE_AND_VALUE.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.ATTR_TYPE_AND_VALUE({
@@ -1009,25 +1009,25 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for ATTR_TYPE_AND_VALUE");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.type = asn1.result.type.value_block.toString();
         this.value = asn1.result.typeValue;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTR_TYPE_AND_VALUE.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 new in_window.org.pkijs.asn1.OID({ value: this.type }),
                 this.value
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTR_TYPE_AND_VALUE.prototype.isEqual =
@@ -1084,25 +1084,25 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "RelativeDistinguishedName" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.RDN =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         /// <field name="types_and_values" type="Array" elementType="in_window.org.pkijs.simpl.ATTR_TYPE_AND_VALUE">Array of "type and value" objects</field>
         this.types_and_values = new Array();
         /// <field name="value_before_decode" type="ArrayBuffer">Value of the RDN before decoding from schema</field>
         this.value_before_decode = new ArrayBuffer(0);
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.RDN.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1111,13 +1111,13 @@ function(in_window)
                 this.value_before_decode = arguments[0].value_before_decode || new ArrayBuffer(0);
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.RDN.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.RDN({
@@ -1130,9 +1130,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for RDN");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("types_and_values" in asn1.result) // Could be a case when there is no "types and values"
         {
             var types_and_values_array = asn1.result.types_and_values;
@@ -1141,33 +1141,35 @@ function(in_window)
         }
 
         this.value_before_decode = asn1.result.RDN.value_before_decode;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.RDN.prototype.toSchema =
     function()
     {
-        // #region Decode stored TBS value 
+        // #region Decode stored TBS value
         if(this.value_before_decode.byteLength === 0) // No stored encoded array, create "from scratch"
         {
-            // #region Create array for output set 
+            // #region Create array for output set
             var output_array = new Array();
-
             for(var i = 0; i < this.types_and_values.length; i++)
-                output_array.push(this.types_and_values[i].toSchema());
-            // #endregion 
+                output_array.push(new in_window.org.pkijs.asn1.SET({
+                    value: [ this.types_and_values[i].toSchema() ]
+                }));
 
-            return (new in_window.org.pkijs.asn1.SEQUENCE({
-                value: [new in_window.org.pkijs.asn1.SET({ value: output_array })]
-            }));
+            a = new in_window.org.pkijs.asn1.SEQUENCE({
+                value: output_array
+            });
+            return a;
         }
 
+        //value: [new in_window.org.pkijs.asn1.SET({ value: output_array })]
         var asn1 = in_window.org.pkijs.fromBER(this.value_before_decode);
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return asn1.result;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.RDN.prototype.isEqual =
@@ -1210,24 +1212,24 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "AuthorityKeyIdentifier" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AuthorityKeyIdentifier =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.keyIdentifier - OCTETSTRING
         // OPTIONAL this.authorityCertIssuer - Array of GeneralName
         // OPTIONAL this.authorityCertSerialNumber - INTEGER
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.AuthorityKeyIdentifier.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1242,13 +1244,13 @@ function(in_window)
                     this.authorityCertSerialNumber = arguments[0].authorityCertSerialNumber;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AuthorityKeyIdentifier.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.AuthorityKeyIdentifier({
@@ -1262,9 +1264,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for AuthorityKeyIdentifier");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("keyIdentifier" in asn1.result)
         {
             asn1.result["keyIdentifier"].id_block.tag_class = 1; // UNIVERSAL
@@ -1289,13 +1291,13 @@ function(in_window)
 
             this.authorityCertSerialNumber = asn1.result["authorityCertSerialNumber"];
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AuthorityKeyIdentifier.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("keyIdentifier" in this)
@@ -1336,13 +1338,13 @@ function(in_window)
 
             output_array.push(value);
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AuthorityKeyIdentifier.prototype.toJSON =
@@ -1367,23 +1369,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "PrivateKeyUsagePeriod" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PrivateKeyUsagePeriod =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.notBefore - new Date()
         // OPTIONAL this.notAfter - new Date()
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.PrivateKeyUsagePeriod.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1395,13 +1397,13 @@ function(in_window)
                     this.notAfter = arguments[0].notAfter;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PrivateKeyUsagePeriod.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.PrivateKeyUsagePeriod({
@@ -1414,9 +1416,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PrivateKeyUsagePeriod");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("notBefore" in asn1.result)
         {
             var localNotBefore = new in_window.org.pkijs.asn1.GENERALIZEDTIME();
@@ -1430,13 +1432,13 @@ function(in_window)
             localNotAfter.fromBuffer(asn1.result["notAfter"].value_block.value_hex);
             this.notAfter = localNotAfter.toDate();
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PrivateKeyUsagePeriod.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("notBefore" in this)
@@ -1456,13 +1458,13 @@ function(in_window)
                 },
                 value_hex: (new in_window.org.pkijs.asn1.GENERALIZEDTIME({ value_date: this.notAfter })).value_block.value_hex
             }));
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PrivateKeyUsagePeriod.prototype.toJSON =
@@ -1479,22 +1481,22 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "IssuerAltName" and "SubjectAltName" types of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AltName =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.altNames = new Array(); //Array of GeneralName
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.AltName.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1502,13 +1504,13 @@ function(in_window)
                 this.altNames = arguments[0].altNames || new Array();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AltName.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.AltName({
@@ -1520,9 +1522,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for AltName");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("altNames" in asn1.result)
         {
             var altNames_array = asn1.result["altNames"];
@@ -1530,24 +1532,24 @@ function(in_window)
             for(var i = 0; i < altNames_array.length; i++)
                 this.altNames.push(new in_window.org.pkijs.simpl.GENERAL_NAME({ schema: altNames_array[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AltName.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.altNames.length; i++)
             output_array.push(this.altNames[i].toSchema());
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AltName.prototype.toJSON =
@@ -1563,22 +1565,22 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "SubjectDirectoryAttributes" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.SubjectDirectoryAttributes =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.attributes = new Array(); // Array of "simpl.ATTRIBUTE"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.SubjectDirectoryAttributes.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1586,13 +1588,13 @@ function(in_window)
                 this.attributes = arguments[0].attributes || new Array(); // Array of "simpl.ATTRIBUTE"
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.SubjectDirectoryAttributes.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.SubjectDirectoryAttributes({
@@ -1604,31 +1606,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for SubjectDirectoryAttributes");
-        // #endregion 
+        // #endregion
 
         // #region Get internal properties from parsed schema
         var attrs = asn1.result["attributes"];
 
         for(var i = 0; i < attrs.length; i++)
             this.attributes.push(new in_window.org.pkijs.simpl.ATTRIBUTE({ schema: attrs[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.SubjectDirectoryAttributes.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.attributes.length; i++)
             output_array.push(this.attributes[i].toSchema());
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.SubjectDirectoryAttributes.prototype.toJSON =
@@ -1644,23 +1646,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "PolicyMapping" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMapping =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.issuerDomainPolicy = "";
         this.subjectDomainPolicy = "";
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.PolicyMapping.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1669,13 +1671,13 @@ function(in_window)
                 this.subjectDomainPolicy = arguments[0].subjectDomainPolicy || "";
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMapping.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.PolicyMapping({
@@ -1688,25 +1690,25 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PolicyMapping");
-        // #endregion 
+        // #endregion
 
         // #region Get internal properties from parsed schema
         this.issuerDomainPolicy = asn1.result["issuerDomainPolicy"].value_block.toString();
         this.subjectDomainPolicy = asn1.result["subjectDomainPolicy"].value_block.toString();
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMapping.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 new in_window.org.pkijs.asn1.OID({ value: this.issuerDomainPolicy }),
                 new in_window.org.pkijs.asn1.OID({ value: this.subjectDomainPolicy })
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMapping.prototype.toJSON =
@@ -1718,22 +1720,22 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "PolicyMappings" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMappings =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.mappings = new Array(); // Array of "simpl.x509.PolicyMapping"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.PolicyMappings.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1741,13 +1743,13 @@ function(in_window)
                 this.mappings = arguments[0].mappings || new Array();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMappings.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.PolicyMappings({
@@ -1759,31 +1761,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PolicyMappings");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         var maps = asn1.result["mappings"];
 
         for(var i = 0; i < maps.length; i++)
             this.mappings.push(new in_window.org.pkijs.simpl.x509.PolicyMapping({ schema: maps[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMappings.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.mappings.length; i++)
             output_array.push(this.mappings.toSchema());
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyMappings.prototype.toJSON =
@@ -1799,24 +1801,24 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "GeneralSubtree" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.GeneralSubtree =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.base = new in_window.org.pkijs.simpl.GENERAL_NAME();
         // OPTIONAL this.minimum // in_window.org.pkijs.asn1.INTEGER
         // OPTIONAL this.maximum // in_window.org.pkijs.asn1.INTEGER
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.GeneralSubtree.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1830,13 +1832,13 @@ function(in_window)
                     this.maximum = arguments[0].maximum;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.GeneralSubtree.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.GeneralSubtree({
@@ -1854,9 +1856,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for ");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.base = new in_window.org.pkijs.simpl.GENERAL_NAME({ schema: asn1.result["base"] });
 
         if("minimum" in asn1.result)
@@ -1874,13 +1876,13 @@ function(in_window)
             else
                 this.maximum = asn1.result["maximum"].value_block.value_dec;
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.GeneralSubtree.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         output_array.push(this.base.toSchema());
@@ -1922,13 +1924,13 @@ function(in_window)
                 value: [value_maximum]
             }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.GeneralSubtree.prototype.toJSON =
@@ -1957,23 +1959,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "NameConstraints" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.NameConstraints =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.permittedSubtrees - Array of "simpl.x509.GeneralSubtree"
         // OPTIONAL this.excludedSubtrees - Array of "simpl.x509.GeneralSubtree"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.NameConstraints.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -1985,13 +1987,13 @@ function(in_window)
                     this.excludedSubtrees = arguments[0].excludedSubtrees;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.NameConstraints.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.NameConstraints({
@@ -2004,9 +2006,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for NameConstraints");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("permittedSubtrees" in asn1.result)
         {
             this.permittedSubtrees = new Array();
@@ -2024,13 +2026,13 @@ function(in_window)
             for(var i = 0; i < excluded_array.length; i++)
                 this.excludedSubtrees.push(new in_window.org.pkijs.simpl.x509.GeneralSubtree({ schema: excluded_array[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.NameConstraints.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("permittedSubtrees" in this)
@@ -2070,13 +2072,13 @@ function(in_window)
                 })]
             }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.NameConstraints.prototype.toJSON =
@@ -2103,23 +2105,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "BasicConstraints" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.BasicConstraints =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.cA - boolean value
         // OPTIONAL this.pathLenConstraint - integer value
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.BasicConstraints.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2131,13 +2133,13 @@ function(in_window)
                     this.pathLenConstraint = arguments[0].pathLenConstraint;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.BasicConstraints.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.BasicConstraints({
@@ -2150,21 +2152,21 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for BasicConstraints");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("cA" in asn1.result)
             this.cA = asn1.result["cA"].value_block.value;
 
         if("pathLenConstraint" in asn1.result)
             this.pathLenConstraint = asn1.result["pathLenConstraint"].value_block.value_dec;
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.BasicConstraints.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("cA" in this)
@@ -2172,13 +2174,13 @@ function(in_window)
 
         if("pathLenConstraint" in this)
             output_array.push(new in_window.org.pkijs.asn1.INTEGER({ value: this.pathLenConstraint }));
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.BasicConstraints.prototype.toJSON =
@@ -2195,23 +2197,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "PolicyQualifierInfo" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyQualifierInfo =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.policyQualifierId = "";
         this.qualifier = new in_window.org.pkijs.asn1.ANY();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.PolicyQualifierInfo.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2220,13 +2222,13 @@ function(in_window)
                 this.qualifier = arguments[0].qualifier || new in_window.org.pkijs.asn1.ANY();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyQualifierInfo.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.PolicyQualifierInfo({
@@ -2239,25 +2241,25 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PolicyQualifierInfo");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.policyQualifierId = asn1.result["policyQualifierId"].value_block.toString();
         this.qualifier = asn1.result["qualifier"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyQualifierInfo.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 new in_window.org.pkijs.asn1.OID({ value: this.policyQualifierId }),
                 this.qualifier
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyQualifierInfo.prototype.toJSON =
@@ -2269,23 +2271,23 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "PolicyInformation" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyInformation =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.policyIdentifier = "";
         // OPTIONAL this.policyQualifiers = new Array(); // Array of "simpl.x509.PolicyQualifierInfo"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.PolicyInformation.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2296,13 +2298,13 @@ function(in_window)
                     this.policyQualifiers = arguments[0].policyQualifiers;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyInformation.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.PolicyInformation({
@@ -2315,9 +2317,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PolicyInformation");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.policyIdentifier = asn1.result["policyIdentifier"].value_block.toString();
 
         if("policyQualifiers" in asn1.result)
@@ -2328,13 +2330,13 @@ function(in_window)
             for(var i = 0; i < qualifiers.length; i++)
                 this.policyQualifiers.push(new in_window.org.pkijs.simpl.x509.PolicyQualifierInfo({ schema: qualifiers[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyInformation.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         output_array.push(new in_window.org.pkijs.asn1.OID({ value: this.policyIdentifier }));
@@ -2350,13 +2352,13 @@ function(in_window)
                 value: qualifiers
             }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyInformation.prototype.toJSON =
@@ -2377,22 +2379,22 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "CertificatePolicies" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CertificatePolicies =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.certificatePolicies = new Array(); // Array of "simpl.x509.PolicyInformation"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.CertificatePolicies.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2400,13 +2402,13 @@ function(in_window)
                 this.certificatePolicies = arguments[0].certificatePolicies || new Array(); // Array of "simpl.x509.PolicyInformation"
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CertificatePolicies.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.CertificatePolicies({
@@ -2418,31 +2420,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for CertificatePolicies");
-        // #endregion 
+        // #endregion
 
         // #region Get internal properties from parsed schema
         var policies = asn1.result["certificatePolicies"];
 
         for(var i = 0; i < policies.length; i++)
             this.certificatePolicies.push(new in_window.org.pkijs.simpl.x509.PolicyInformation({ schema: policies[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CertificatePolicies.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.certificatePolicies.length; i++)
             output_array.push(this.certificatePolicies[i].toSchema());
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CertificatePolicies.prototype.toJSON =
@@ -2458,23 +2460,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "PolicyConstraints" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyConstraints =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.requireExplicitPolicy = 0;
         // OPTIONAL this.inhibitPolicyMapping = 0;
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.PolicyConstraints.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2483,13 +2485,13 @@ function(in_window)
                 this.inhibitPolicyMapping = arguments[0].inhibitPolicyMapping || 0;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyConstraints.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.PolicyConstraints({
@@ -2502,7 +2504,7 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PolicyConstraints");
-        // #endregion 
+        // #endregion
 
         // #region Get internal properties from parsed schema
         if("requireExplicitPolicy" in asn1.result)
@@ -2530,13 +2532,13 @@ function(in_window)
 
             this.inhibitPolicyMapping = int2.result.value_block.value_dec;
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyConstraints.prototype.toSchema =
     function()
     {
-        // #region Create correct values for output sequence 
+        // #region Create correct values for output sequence
         var output_array = new Array();
 
         if("requireExplicitPolicy" in this)
@@ -2558,13 +2560,13 @@ function(in_window)
 
             output_array.push(int2);
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.PolicyConstraints.prototype.toJSON =
@@ -2581,22 +2583,22 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "ExtKeyUsage" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.ExtKeyUsage =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.keyPurposes = new Array(); // Array of strings (OIDs value for key purposes)
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.ExtKeyUsage.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2604,13 +2606,13 @@ function(in_window)
                 this.keyPurposes = arguments[0].keyPurposes || new Array(); // Array of strings (OIDs value for key purposes)
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.ExtKeyUsage.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.ExtKeyUsage({
@@ -2622,31 +2624,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for ExtKeyUsage");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         var purposes = asn1.result["keyPurposes"];
 
         for(var i = 0; i < purposes.length; i++)
             this.keyPurposes.push(purposes[i].value_block.toString());
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.ExtKeyUsage.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.keyPurposes.length; i++)
             output_array.push(new in_window.org.pkijs.asn1.OID({ value: this.keyPurposes[i] }));
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.ExtKeyUsage.prototype.toJSON =
@@ -2662,24 +2664,24 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "DistributionPoint" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.DistributionPoint =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.distributionPoint // Array of "simpl.GENERAL_NAME" or a value of "simpl.RDN" type
         // OPTIONAL this.reasons // BITSTRING value
         // OPTIONAL this.cRLIssuer // Array of "simpl.GENERAL_NAME"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.DistributionPoint.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2694,13 +2696,13 @@ function(in_window)
                     this.cRLIssuer = arguments[0].cRLIssuer;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.DistributionPoint.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.DistributionPoint({
@@ -2716,9 +2718,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for DistributionPoint");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("distributionPoint" in asn1.result)
         {
             if(asn1.result["distributionPoint"].id_block.tag_number == 0) // GENERAL_NAMES variant
@@ -2750,13 +2752,13 @@ function(in_window)
             for(var i = 0; i < crl_names; i++)
                 this.cRLIssuer.push(new in_window.org.pkijs.simpl.GENERAL_NAME({ schema: crl_names[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.DistributionPoint.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("distributionPoint" in this)
@@ -2813,13 +2815,13 @@ function(in_window)
 
             output_array.push(value);
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.DistributionPoint.prototype.toJSON =
@@ -2854,22 +2856,22 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "CRLDistributionPoints" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CRLDistributionPoints =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.distributionPoints = new Array(); // Array of "simpl.x509.DistributionPoint"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.CRLDistributionPoints.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2877,13 +2879,13 @@ function(in_window)
                 this.distributionPoints = arguments[0].distributionPoints || new Array(); // Array of "simpl.x509.DistributionPoint"
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CRLDistributionPoints.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.CRLDistributionPoints({
@@ -2895,31 +2897,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for CRLDistributionPoints");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         var points = asn1.result["distributionPoints"];
 
         for(var i = 0; i < points.length; i++)
             this.distributionPoints.push(new in_window.org.pkijs.simpl.x509.DistributionPoint({ schema: points[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CRLDistributionPoints.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.distributionPoints.length; i++)
             output_array.push(this.distributionPoints[i].toSchema());
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.CRLDistributionPoints.prototype.toJSON =
@@ -2935,23 +2937,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "AccessDescription" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AccessDescription =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.accessMethod = "";
         this.accessLocation = new in_window.org.pkijs.simpl.GENERAL_NAME();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.AccessDescription.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -2960,13 +2962,13 @@ function(in_window)
                 this.accessLocation = arguments[0].accessLocation || new in_window.org.pkijs.simpl.GENERAL_NAME();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AccessDescription.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.AccessDescription({
@@ -2983,25 +2985,25 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for AccessDescription");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.accessMethod = asn1.result["accessMethod"].value_block.toString();
         this.accessLocation = new in_window.org.pkijs.simpl.GENERAL_NAME({ schema: asn1.result["accessLocation"] });
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AccessDescription.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 new in_window.org.pkijs.asn1.OID({ value: this.accessMethod }),
                 this.accessLocation.toSchema()
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.AccessDescription.prototype.toJSON =
@@ -3013,22 +3015,22 @@ function(in_window)
         };
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "AuthorityInfoAccess" and "SubjectInfoAccess" types of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.InfoAccess =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.accessDescriptions = new Array(); // Array of "simpl.x509.AccessDescription"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.InfoAccess.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -3036,13 +3038,13 @@ function(in_window)
                 this.accessDescriptions = arguments[0].accessDescriptions || new Array(); // Array of "simpl.x509.DistributionPoint"
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.InfoAccess.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.InfoAccess({
@@ -3054,31 +3056,31 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for InfoAccess");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         var descriptions = asn1.result["accessDescriptions"];
 
         for(var i = 0; i < descriptions.length; i++)
             this.accessDescriptions.push(new in_window.org.pkijs.simpl.x509.AccessDescription({ schema: descriptions[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.InfoAccess.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         for(var i = 0; i < this.accessDescriptions.length; i++)
             output_array.push(this.accessDescriptions[i].toSchema());
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.InfoAccess.prototype.toJSON =
@@ -3094,27 +3096,27 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "IssuingDistributionPoint" type of extension
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.IssuingDistributionPoint =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         // OPTIONAL this.distributionPoint // Array of "simpl.GENERAL_NAME" or a value of "simpl.RDN" type
         // OPTIONAL this.onlyContainsUserCerts // BOOLEAN flag
         // OPTIONAL this.onlyContainsCACerts // BOOLEAN flag
         // OPTIONAL this.onlySomeReasons // BITSTRING
         // OPTIONAL this.indirectCRL // BOOLEAN flag
         // OPTIONAL this.onlyContainsAttributeCerts // BOOLEAN flag
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.x509.IssuingDistributionPoint.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -3138,13 +3140,13 @@ function(in_window)
                     this.onlyContainsAttributeCerts = arguments[0].onlyContainsAttributeCerts;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.IssuingDistributionPoint.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.x509.IssuingDistributionPoint({
@@ -3161,9 +3163,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for IssuingDistributionPoint");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         if("distributionPoint" in asn1.result)
         {
             if(asn1.result["distributionPoint"].id_block.tag_number == 0) // GENERAL_NAMES variant
@@ -3213,13 +3215,13 @@ function(in_window)
             var view = new Uint8Array(asn1.result["onlyContainsAttributeCerts"].value_block.value_hex);
             this.onlyContainsAttributeCerts = (view[0] === 0x00) ? false : true;
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.IssuingDistributionPoint.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("distributionPoint" in this)
@@ -3338,13 +3340,13 @@ function(in_window)
                 value_hex: buffer
             }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.x509.IssuingDistributionPoint.prototype.toJSON =
@@ -3383,26 +3385,26 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "Extension" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSION =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.extnID = "";
         this.critical = false;
         this.extnValue = new in_window.org.pkijs.asn1.OCTETSTRING();
 
         // this.parsedValue - Parsed "extnValue" in case of well-known "extnID"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.EXTENSION.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -3418,13 +3420,13 @@ function(in_window)
                     this.parsedValue = arguments[0].parsedValue;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSION.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.EXTENSION({
@@ -3438,15 +3440,15 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for EXTENSION");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.extnID = asn1.result.extnID.value_block.toString();
         if("critical" in asn1.result)
             this.critical = asn1.result.critical.value_block.value;
         this.extnValue = asn1.result.extnValue;
 
-        // #region Get "parsedValue" for well-known extensions 
+        // #region Get "parsedValue" for well-known extensions
         var asn1 = in_window.org.pkijs.fromBER(this.extnValue.value_block.value_hex);
         if(asn1.offset === (-1))
             return;
@@ -3486,7 +3488,7 @@ function(in_window)
                 this.parsedValue = new in_window.org.pkijs.simpl.x509.IssuingDistributionPoint({ schema: asn1.result });
                 break;
             case "2.5.29.29": // CertificateIssuer
-                this.parsedValue = new in_window.org.pkijs.simpl.GENERAL_NAMES({ schema: asn1.result }); // Should be just a simple 
+                this.parsedValue = new in_window.org.pkijs.simpl.GENERAL_NAMES({ schema: asn1.result }); // Should be just a simple
                 break;
             case "2.5.29.30": // NameConstraints
                 this.parsedValue = new in_window.org.pkijs.simpl.x509.NameConstraints({ schema: asn1.result });
@@ -3519,14 +3521,14 @@ function(in_window)
                 break;
             default:;
         }
-        // #endregion 
-        // #endregion 
+        // #endregion
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSION.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 new in_window.org.pkijs.asn1.OID({ value: this.extnID }),
@@ -3534,7 +3536,7 @@ function(in_window)
                 this.extnValue
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSION.prototype.toJSON =
@@ -3552,34 +3554,34 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "Extensions" type (sequence of many Extension)
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSIONS =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.extensions_array = new Array();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.EXTENSIONS.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
                 this.extensions_array = (arguments[0].extensions_array || (new Array()));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSIONS.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.EXTENSIONS({
@@ -3591,18 +3593,18 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for EXTENSIONS");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         for(var i = 0; i < asn1.result.extensions.length; i++)
             this.extensions_array.push(new in_window.org.pkijs.simpl.EXTENSION({ schema: asn1.result.extensions[i] }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSIONS.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         var extension_schemas = new Array();
 
         for(var i = 0; i < this.extensions_array.length; i++)
@@ -3611,7 +3613,7 @@ function(in_window)
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: extension_schemas
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.EXTENSIONS.prototype.toJSON =
@@ -3627,15 +3629,15 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for X.509 v3 certificate (RFC5280)
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT =
     function()
     {
-        // #region Internal properties of the object 
-        // #region Properties from certificate TBS part 
+        // #region Internal properties of the object
+        // #region Properties from certificate TBS part
         this.tbs = new ArrayBuffer(0); // Encoded value of certificate TBS (need to have it for certificate validation)
 
         // OPTIONAL this.version = 0;
@@ -3649,24 +3651,24 @@ function(in_window)
         // OPTIONAL this.issuerUniqueID = new ArrayBuffer(0); // IMPLICIT bistring value
         // OPTIONAL this.subjectUniqueID = new ArrayBuffer(0); // IMPLICIT bistring value
         // OPTIONAL this.extensions = new Array(); // Array of "simpl.EXTENSION"
-        // #endregion 
+        // #endregion
 
-        // #region Properties from certificate major part 
+        // #region Properties from certificate major part
         this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER(); // Signature algorithm from certificate major part
         this.signatureValue = new in_window.org.pkijs.asn1.BITSTRING();
-        // #endregion 
-        // #endregion 
+        // #endregion
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.CERT.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
             {
-                // #region Properties from certificate TBS part 
+                // #region Properties from certificate TBS part
                 this.tbs = arguments[0].tbs || new ArrayBuffer(0);
 
                 if("version" in arguments[0])
@@ -3684,21 +3686,21 @@ function(in_window)
                     this.subjectUniqueID = arguments[0].subjectUniqueID;
                 if("extensions" in arguments[0])
                     this.extensions = arguments[0].extensions;
-                // #endregion 
+                // #endregion
 
-                // #region Properties from certificate major part 
+                // #region Properties from certificate major part
                 this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER(); // Signature algorithm from certificate major part
                 this.signatureValue = new in_window.org.pkijs.asn1.BITSTRING();
-                // #endregion 
+                // #endregion
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.CERT({
@@ -3718,9 +3720,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for CERT");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.tbs = asn1.result["tbsCertificate"].value_before_decode;
 
         if("tbsCertificate.version" in asn1.result)
@@ -3748,7 +3750,7 @@ function(in_window)
 
         this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER({ schema: asn1.result["signatureAlgorithm"] });
         this.signatureValue = asn1.result["signatureValue"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT.prototype.encodeTBS =
@@ -3756,7 +3758,7 @@ function(in_window)
     {
         /// <summary>Create ASN.1 schema for existing values of TBS part for the certificate</summary>
 
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("version" in this)
@@ -3832,13 +3834,13 @@ function(in_window)
                 })]
             }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Create and return output sequence 
+        // #region Create and return output sequence
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT.prototype.toSchema =
@@ -3851,7 +3853,7 @@ function(in_window)
 
         var tbs_schema = {};
 
-        // #region Decode stored TBS value 
+        // #region Decode stored TBS value
         if(encodeFlag === false)
         {
             if(this.tbs.length === 0) // No stored certificate TBS part
@@ -3861,13 +3863,13 @@ function(in_window)
 
             tbs_schema = tbs_asn1.result;
         }
-        // #endregion 
-        // #region Create TBS schema via assembling from TBS parts 
+        // #endregion
+        // #region Create TBS schema via assembling from TBS parts
         else
             tbs_schema = in_window.org.pkijs.simpl.CERT.prototype.encodeTBS.call(this);
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 tbs_schema,
@@ -3875,7 +3877,7 @@ function(in_window)
                 this.signatureValue
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT.prototype.verify =
@@ -3884,7 +3886,7 @@ function(in_window)
         /// <summary>!!! Works well in Chrome dev versions only (April 2014th) !!!</summary>
         /// <returns type="Promise">Returns a new Promise object (in case of error), or a result of "crypto.subtle.veryfy" function</returns>
 
-        // #region Global variables 
+        // #region Global variables
         var sequence = Promise.resolve();
 
         var subjectPublicKeyInfo = {};
@@ -3893,9 +3895,9 @@ function(in_window)
         var tbs = this.tbs;
 
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Set correct "subjectPublicKeyInfo" value 
+        // #region Set correct "subjectPublicKeyInfo" value
         if(this.issuer.isEqual(this.subject)) // Self-signed certificate
             subjectPublicKeyInfo = this.subjectPublicKeyInfo;
         else
@@ -3909,15 +3911,15 @@ function(in_window)
             if((subjectPublicKeyInfo instanceof in_window.org.pkijs.simpl.PUBLIC_KEY_INFO) === false)
                 return new Promise(function(resolve, reject) { reject("Please provide issuer certificate as a parameter"); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Find signer's hashing algorithm 
+        // #region Find signer's hashing algorithm
         var sha_algorithm = "";
 
         switch(this.signatureAlgorithm.algorithm_id)
@@ -3937,9 +3939,9 @@ function(in_window)
             default:
                 return new Promise(function(resolve, reject) { reject("Unsupported signature algorithm: " + _this.signatureAlgorithm.algorithm_id); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Importing public key 
+        // #region Importing public key
         sequence = sequence.then(
             function()
             {
@@ -3950,9 +3952,9 @@ function(in_window)
                 return crypto.importKey("spki", publicKeyInfo_view, { name: "RSASSA-PKCS1-v1_5", hash: { name: sha_algorithm } }, true, ["verify"]);
             }
             );
-        // #endregion 
+        // #endregion
 
-        // #region Verify signature for the certificate 
+        // #region Verify signature for the certificate
         sequence = sequence.then(
             function(publicKey)
             {
@@ -3962,7 +3964,7 @@ function(in_window)
                     new Uint8Array(tbs));
             }
             );
-        // #endregion 
+        // #endregion
 
         return sequence;
     }
@@ -3972,16 +3974,16 @@ function(in_window)
     {
         /// <param name="privateKey" type="Key">Private key for "subjectPublicKeyInfo" structure</param>
 
-        // #region Initial variables 
+        // #region Initial variables
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Get a private key from function parameter 
+        // #region Get a private key from function parameter
         if(typeof privateKey === "undefined")
             return new Promise(function(resolve, reject) { reject("Need to provide a private key for signing"); });
-        // #endregion 
+        // #endregion
 
-        // #region Find a correct hashing algorithm 
+        // #region Find a correct hashing algorithm
         var sha_algorithm = "";
 
         switch(this.signatureAlgorithm.algorithm_id)
@@ -4001,19 +4003,19 @@ function(in_window)
             default:
                 return new Promise(function(resolve, reject) { reject("Unsupported signature algorithm: " + _this.signature.signatureAlgorithm.algorithm_id); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Create TBS data for signing 
+        // #region Create TBS data for signing
         _this.tbs = in_window.org.pkijs.simpl.CERT.prototype.encodeTBS.call(this).toBER(false);
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Signing TBS data on provided private key 
+        // #region Signing TBS data on provided private key
         return crypto.sign({ name: privateKey.algorithm.name, hash: { name: sha_algorithm } },
             privateKey,
             new Uint8Array(_this.tbs)).then(
@@ -4026,7 +4028,7 @@ function(in_window)
                 return new Promise(function(resolve, reject) { reject("Signing error: " + error); });
             }
             );
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT.prototype.getPublicKey =
@@ -4034,11 +4036,11 @@ function(in_window)
     {
         /// <summary>Importing public key for current certificate</summary>
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
         var publicKeyInfo_schema = this.subjectPublicKeyInfo.toSchema();
         var publicKeyInfo_buffer = publicKeyInfo_schema.toBER(false);
@@ -4052,11 +4054,11 @@ function(in_window)
     {
         /// <summary>Get SHA-1 hash value for subject public key</summary>
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
         return crypto.digest({ name: "sha-1" }, new Uint8Array(this.subjectPublicKeyInfo.subjectPublicKey.value_block.value_hex));
     }
@@ -4097,24 +4099,24 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "revoked certificate" type (to use in CRL)
     //**************************************************************************************
     in_window.org.pkijs.simpl.REV_CERT =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.userCertificate = new in_window.org.pkijs.asn1.INTEGER();
         this.revocationDate = new in_window.org.pkijs.simpl.TIME();
         // OPTIONAL this.crlEntryExtensions = new Array(); // Array of "in_window.org.pkijs.simpl.EXTENSION");
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.REV_CERT.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -4125,13 +4127,13 @@ function(in_window)
                     this.crlEntryExtensions = arguments[0].crlEntryExtensions;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.REV_CERT.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             new in_window.org.pkijs.asn1.SEQUENCE({
@@ -4154,9 +4156,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for REV_CERT");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.userCertificate = asn1.result["userCertificate"];
         this.revocationDate = new in_window.org.pkijs.simpl.TIME({ schema: asn1.result["revocationDate"] });
 
@@ -4168,13 +4170,13 @@ function(in_window)
             for(var i = 0; i < exts.length; i++)
                 this.crlEntryExtensions.push(new in_window.org.pkijs.simpl.EXTENSION({ schema: exts[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.REV_CERT.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var sequence_array = new Array();
         sequence_array.push(this.userCertificate);
         sequence_array.push(this.revocationDate.toSchema());
@@ -4188,13 +4190,13 @@ function(in_window)
 
             sequence_array.push(new in_window.org.pkijs.asn1.SEQUENCE({ value: exts }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: sequence_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.REV_CERT.prototype.toJSON =
@@ -4216,15 +4218,15 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
-    // #region Simplified structure for X.509 CRL (Certificate Revocation List)(RFC5280)  
+    // #region Simplified structure for X.509 CRL (Certificate Revocation List)(RFC5280)
     //**************************************************************************************
     in_window.org.pkijs.simpl.CRL =
     function()
     {
-        // #region Internal properties of the object 
-        // #region Properties from CRL TBS part 
+        // #region Internal properties of the object
+        // #region Properties from CRL TBS part
         this.tbs = new ArrayBuffer(0);
 
         // OPTIONAL this.version = 1;
@@ -4234,24 +4236,24 @@ function(in_window)
         // OPTIONAL this.nextUpdate = new in_window.org.pkijs.simpl.TIME();
         // OPTIONAL this.revokedCertificates = new Array(); // Array of REV_CERT objects
         // OPTIONAL this.crlExtensions = new Array(); // Array of in_window.org.pkijs.simpl.EXTENSION();
-        // #endregion 
+        // #endregion
 
-        // #region Properties from CRL major part 
+        // #region Properties from CRL major part
         this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER();
         this.signatureValue = new in_window.org.pkijs.asn1.BITSTRING();
-        // #endregion 
-        // #endregion 
+        // #endregion
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.CRL.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
             {
-                // #region Properties from CRL TBS part 
+                // #region Properties from CRL TBS part
                 this.tbs = arguments[0].tbs || new ArrayBuffer(0);
 
                 if("version" in arguments[0])
@@ -4265,21 +4267,21 @@ function(in_window)
                     this.revokedCertificates = arguments[0].revokedCertificates;
                 if("crlExtensions" in arguments[0])
                     this.crlExtensions = arguments[0].crlExtensions;
-                // #endregion 
+                // #endregion
 
-                // #region Properties from CRL major part 
+                // #region Properties from CRL major part
                 this.signatureAlgorithm = arguments[0].signatureAlgorithm || new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER();
                 this.signatureValue = arguments[0].signatureValue || new in_window.org.pkijs.asn1.BITSTRING();
-                // #endregion 
+                // #endregion
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CRL.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.CRL()
@@ -4287,9 +4289,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for CRL");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.tbs = asn1.result["tbsCertList"].value_before_decode;
 
         if("tbsCertList.version" in asn1.result)
@@ -4318,13 +4320,13 @@ function(in_window)
 
         this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER({ schema: asn1.result["signatureAlgorithm"] });
         this.signatureValue = asn1.result["signatureValue"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CRL.prototype.encodeTBS =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         if("version" in this)
@@ -4369,7 +4371,7 @@ function(in_window)
                 ]
             }));
         }
-        // #endregion 
+        // #endregion
 
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
@@ -4381,12 +4383,12 @@ function(in_window)
     {
         /// <param name="encodeFlag" type="Boolean">If param equal to false then create TBS schema via decoding stored value. In othe case create TBS schema via assembling from TBS parts.</param>
 
-        // #region Check "encodeFlag" 
+        // #region Check "encodeFlag"
         if(typeof encodeFlag === "undefined")
             encodeFlag = false;
-        // #endregion 
+        // #endregion
 
-        // #region Decode stored TBS value 
+        // #region Decode stored TBS value
         var tbs_schema;
 
         if(encodeFlag === false)
@@ -4396,13 +4398,13 @@ function(in_window)
 
             tbs_schema = in_window.org.pkijs.fromBER(this.tbs).result;
         }
-        // #endregion 
-        // #region Create TBS schema via assembling from TBS parts 
+        // #endregion
+        // #region Create TBS schema via assembling from TBS parts
         else
             tbs_schema = in_window.org.pkijs.simpl.CRL.prototype.encodeTBS.call(this);
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 tbs_schema,
@@ -4410,7 +4412,7 @@ function(in_window)
                 this.signatureValue
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CRL.prototype.verify =
@@ -4419,7 +4421,7 @@ function(in_window)
         /// <summary>!!! Works well in Chrome dev versions only (April 2014th) !!!</summary>
         /// <returns type="Promise">Returns a new Promise object (in case of error), or a result of "crypto.subtle.veryfy" function</returns>
 
-        // #region Global variables 
+        // #region Global variables
         var sequence = Promise.resolve();
 
         var signature = this.signatureValue;
@@ -4428,31 +4430,31 @@ function(in_window)
         var subjectPublicKeyInfo = -1;
 
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Get information about CRL issuer certificate 
+        // #region Get information about CRL issuer certificate
         if(arguments[0] instanceof Object)
         {
             if("issuerCertificate" in arguments[0]) // "issuerCertificate" must be of type "simpl.CERT"
                 subjectPublicKeyInfo = arguments[0].issuerCertificate.subjectPublicKeyInfo;
 
-            // #region In case if there is only public key during verification 
+            // #region In case if there is only public key during verification
             if("publicKeyInfo" in arguments[0])
                 subjectPublicKeyInfo = arguments[0].publicKeyInfo; // Must be of type "org.pkijs.simpl.PUBLIC_KEY_INFO"
-            // #endregion 
+            // #endregion
         }
 
         if((subjectPublicKeyInfo instanceof in_window.org.pkijs.simpl.PUBLIC_KEY_INFO) === false)
             return new Promise(function(resolve, reject) { reject("Issuer's certificate must be provided as an input parameter"); });
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Find signer's hashing algorithm 
+        // #region Find signer's hashing algorithm
         var sha_algorithm = "";
 
         switch(this.signatureAlgorithm.algorithm_id)
@@ -4472,9 +4474,9 @@ function(in_window)
             default:
                 return new Promise(function(resolve, reject) { reject("Unsupported signature algorithm: " + _this.signatureAlgorithm.algorithm_id); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Import public key 
+        // #region Import public key
         sequence = sequence.then(
             function()
             {
@@ -4489,9 +4491,9 @@ function(in_window)
                     ["verify"]);
             }
             );
-        // #endregion 
+        // #endregion
 
-        // #region Verify signature for the certificate 
+        // #region Verify signature for the certificate
         sequence = sequence.then(
             function(publicKey)
             {
@@ -4501,7 +4503,7 @@ function(in_window)
                     new Uint8Array(tbs));
             }
             );
-        // #endregion 
+        // #endregion
 
         return sequence;
     }
@@ -4511,16 +4513,16 @@ function(in_window)
     {
         /// <param name="privateKey" type="Key">Private key for "subjectPublicKeyInfo" structure</param>
 
-        // #region Initial variables 
+        // #region Initial variables
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Get a private key from function parameter 
+        // #region Get a private key from function parameter
         if(typeof privateKey === "undefined")
             return new Promise(function(resolve, reject) { reject("Need to provide a private key for signing"); });
-        // #endregion 
+        // #endregion
 
-        // #region Find a correct hashing algorithm 
+        // #region Find a correct hashing algorithm
         var sha_algorithm = "";
 
         switch(this.signatureAlgorithm.algorithm_id)
@@ -4540,19 +4542,19 @@ function(in_window)
             default:
                 return new Promise(function(resolve, reject) { reject("Unsupported signature algorithm: " + _this.signature.signatureAlgorithm.algorithm_id); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Create TBS data for signing 
+        // #region Create TBS data for signing
         _this.tbs = in_window.org.pkijs.simpl.CRL.prototype.encodeTBS.call(this).toBER(false);
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Signing TBS data on provided private key 
+        // #region Signing TBS data on provided private key
         return crypto.sign(
             { name: privateKey.algorithm.name, hash: { name: sha_algorithm } },
             privateKey,
@@ -4567,13 +4569,13 @@ function(in_window)
                 return new Promise(function(resolve, reject) { reject("Signing error: " + error); });
             }
             );
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CRL.prototype.isCertificateRevoked =
     function()
     {
-        // #region Get input certificate 
+        // #region Get input certificate
         var certificate = {};
 
         if(arguments[0] instanceof Object)
@@ -4584,25 +4586,25 @@ function(in_window)
 
         if((certificate instanceof in_window.org.pkijs.simpl.CERT) === false)
             return false;
-        // #endregion 
+        // #endregion
 
-        // #region Check that issuer of the input certificate is the same with issuer of this CRL 
+        // #region Check that issuer of the input certificate is the same with issuer of this CRL
         if(this.issuer.isEqual(certificate.issuer) === false)
             return false;
-        // #endregion 
+        // #endregion
 
-        // #region Check that there are revoked certificates in this CRL 
+        // #region Check that there are revoked certificates in this CRL
         if(("revokedCertificates" in this) === false)
             return false;
-        // #endregion 
+        // #endregion
 
-        // #region Search for input certificate in revoked certificates array 
+        // #region Search for input certificate in revoked certificates array
         for(var i = 0; i < this.revokedCertificates.length; i++)
         {
             if(this.revokedCertificates[i].userCertificate.isEqual(certificate.serialNumber))
                 return true;
         }
-        // #endregion 
+        // #endregion
 
         return false;
     }
@@ -4644,23 +4646,23 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for "Attribute" type
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTRIBUTE =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.type = "";
         this.values = new Array();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.ATTRIBUTE.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -4669,13 +4671,13 @@ function(in_window)
                 this.values = arguments[0].values || new Array();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTRIBUTE.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.ATTRIBUTE({
@@ -4688,18 +4690,18 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for ATTRIBUTE");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.type = asn1.result["type"].value_block.toString();
         this.values = asn1.result["values"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTRIBUTE.prototype.toSchema =
     function()
     {
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 new in_window.org.pkijs.asn1.OID({ value: this.type }),
@@ -4708,7 +4710,7 @@ function(in_window)
                 })
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.ATTRIBUTE.prototype.toJSON =
@@ -4725,14 +4727,14 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for PKCS#10 certificate request
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS10 =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.tbs = new ArrayBuffer(0);
 
         this.version = 0;
@@ -4742,13 +4744,13 @@ function(in_window)
 
         this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER(); // Signature algorithm from certificate major part
         this.signatureValue = new in_window.org.pkijs.asn1.BITSTRING();
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.PKCS10.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -4766,13 +4768,13 @@ function(in_window)
                 this.signatureValue = arguments[0].signatureValue || new in_window.org.pkijs.asn1.BITSTRING();
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS10.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.PKCS10()
@@ -4780,9 +4782,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PKCS10");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.tbs = asn1.result["CertificationRequestInfo"].value_before_decode;
 
         this.version = asn1.result["CertificationRequestInfo.version"].value_block.value_dec;
@@ -4799,13 +4801,13 @@ function(in_window)
 
         this.signatureAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER({ schema: asn1.result["signatureAlgorithm"] });
         this.signatureValue = asn1.result["signatureValue"];
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS10.prototype.encodeTBS =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         output_array.push(new in_window.org.pkijs.asn1.INTEGER({ value: this.version }));
@@ -4827,7 +4829,7 @@ function(in_window)
                 value: attributes
             }));
         }
-        // #endregion 
+        // #endregion
 
         return (new in_window.org.pkijs.asn1.SEQUENCE({ value: output_array }));
     }
@@ -4837,12 +4839,12 @@ function(in_window)
     {
         /// <param name="encodeFlag" type="Boolean">If param equal to false then create TBS schema via decoding stored value. In othe case create TBS schema via assembling from TBS parts.</param>
 
-        // #region Check "encodeFlag" 
+        // #region Check "encodeFlag"
         if(typeof encodeFlag === "undefined")
             encodeFlag = false;
-        // #endregion 
+        // #endregion
 
-        // #region Decode stored TBS value 
+        // #region Decode stored TBS value
         var tbs_schema;
 
         if(encodeFlag === false)
@@ -4852,13 +4854,13 @@ function(in_window)
 
             tbs_schema = in_window.org.pkijs.fromBER(this.tbs).result;
         }
-        // #endregion 
-        // #region Create TBS schema via assembling from TBS parts 
+        // #endregion
+        // #region Create TBS schema via assembling from TBS parts
         else
             tbs_schema = in_window.org.pkijs.simpl.PKCS10.prototype.encodeTBS.call(this);
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: [
                 tbs_schema,
@@ -4866,7 +4868,7 @@ function(in_window)
                 this.signatureValue
             ]
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS10.prototype.verify =
@@ -4875,7 +4877,7 @@ function(in_window)
         /// <summary>!!! Works well in Chrome dev versions only (April 2014th) !!!</summary>
         /// <returns type="Promise">Returns a new Promise object (in case of error), or a result of "crypto.subtle.veryfy" function</returns>
 
-        // #region Global variables 
+        // #region Global variables
         var sha_algorithm = "";
 
         var sequence = Promise.resolve();
@@ -4883,15 +4885,15 @@ function(in_window)
         var subjectPublicKeyInfo = this.subjectPublicKeyInfo;
         var signature = this.signatureValue;
         var tbs = this.tbs;
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Find a correct hashing algorithm 
+        // #region Find a correct hashing algorithm
         switch(this.signatureAlgorithm.algorithm_id)
         {
             case "1.2.840.113549.1.1.5":
@@ -4909,9 +4911,9 @@ function(in_window)
             default:
                 return new Promise(function(resolve, reject) { reject("Unsupported signature algorithm: " + this.signature.signatureAlgorithm.algorithm_id); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Importing public key 
+        // #region Importing public key
         sequence = sequence.then(
             function()
             {
@@ -4922,9 +4924,9 @@ function(in_window)
                 return crypto.importKey("spki", publicKeyInfo_view, { name: "RSASSA-PKCS1-v1_5", hash: { name: sha_algorithm } }, true, ["verify"]);
             }
             );
-        // #endregion 
+        // #endregion
 
-        // #region Verify signature  
+        // #region Verify signature
         sequence = sequence.then(
             function(publicKey)
             {
@@ -4934,7 +4936,7 @@ function(in_window)
                     new Uint8Array(tbs));
             }
             );
-        // #endregion   
+        // #endregion
 
         return sequence;
     }
@@ -4944,16 +4946,16 @@ function(in_window)
     {
         /// <param name="privateKey" type="Key">Private key for "subjectPublicKeyInfo" structure</param>
 
-        // #region Initial variables 
+        // #region Initial variables
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Get a private key from function parameter 
+        // #region Get a private key from function parameter
         if(typeof privateKey === "undefined")
             return new Promise(function(resolve, reject) { reject("Need to provide a private key for signing"); });
-        // #endregion 
+        // #endregion
 
-        // #region Find a correct hashing algorithm 
+        // #region Find a correct hashing algorithm
         var sha_algorithm = "";
 
         switch(this.signatureAlgorithm.algorithm_id)
@@ -4973,19 +4975,19 @@ function(in_window)
             default:
                 return new Promise(function(resolve, reject) { reject("Unsupported signature algorithm: " + this.signature.signatureAlgorithm.algorithm_id); });
         }
-        // #endregion 
+        // #endregion
 
-        // #region Create TBS data for signing 
+        // #region Create TBS data for signing
         _this.tbs = in_window.org.pkijs.simpl.PKCS10.prototype.encodeTBS.call(this).toBER(false);
-        // #endregion 
+        // #endregion
 
-        // #region Get a "crypto" extension 
+        // #region Get a "crypto" extension
         var crypto = in_window.org.pkijs.getCrypto();
         if(typeof crypto == "undefined")
             return new Promise(function(resolve, reject) { reject("Unable to create WebCrypto object"); });
-        // #endregion 
+        // #endregion
 
-        // #region Signing TBS data on provided private key 
+        // #region Signing TBS data on provided private key
         return crypto.sign({ name: privateKey.algorithm.name, hash: { name: sha_algorithm } },
             privateKey,
             new Uint8Array(_this.tbs)).then(
@@ -4998,7 +5000,7 @@ function(in_window)
                 return new Promise(function(resolve, reject) { reject("Signing error: " + error); });
             }
             );
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS10.prototype.toJSON =
@@ -5024,25 +5026,25 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
     // #region Simplified structure for PKCS#8 private key bag
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS8 =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         this.version = 0;
         this.privateKeyAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER();
         this.privateKey = new in_window.org.pkijs.asn1.OCTETSTRING();
         // OPTIONAL this.attributes // Array of "in_window.org.pkijs.simpl.ATTRIBUTE"
-        // #endregion 
+        // #endregion
 
-        // #region If input argument array contains "schema" for this object 
+        // #region If input argument array contains "schema" for this object
         if((arguments[0] instanceof Object) && ("schema" in arguments[0]))
             in_window.org.pkijs.simpl.PKCS8.prototype.fromSchema.call(this, arguments[0].schema);
-        // #endregion 
-        // #region If input argument array contains "native" values for internal properties 
+        // #endregion
+        // #region If input argument array contains "native" values for internal properties
         else
         {
             if(arguments[0] instanceof Object)
@@ -5055,13 +5057,13 @@ function(in_window)
                     this.attributes = arguments[0].attributes;
             }
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS8.prototype.fromSchema =
     function(schema)
     {
-        // #region Check the schema is valid 
+        // #region Check the schema is valid
         var asn1 = in_window.org.pkijs.compareSchema(schema,
             schema,
             in_window.org.pkijs.schema.PKCS8({
@@ -5080,9 +5082,9 @@ function(in_window)
 
         if(asn1.verified === false)
             throw new Error("Object's schema was not verified against input data for PKCS8");
-        // #endregion 
+        // #endregion
 
-        // #region Get internal properties from parsed schema 
+        // #region Get internal properties from parsed schema
         this.version = asn1.result["version"].value_block.value_dec;
         this.privateKeyAlgorithm = new in_window.org.pkijs.simpl.ALGORITHM_IDENTIFIER({ schema: asn1.result["privateKeyAlgorithm"] });
         this.privateKey = asn1.result["privateKey"];
@@ -5095,13 +5097,13 @@ function(in_window)
             for(var i = 0; i < attrs.length; i++)
                 this.attributes.push(new in_window.org.pkijs.simpl.ATTRIBUTE({ schema: attrs[i] }));
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS8.prototype.toSchema =
     function()
     {
-        // #region Create array for output sequence 
+        // #region Create array for output sequence
         var output_array = new Array();
 
         output_array.push(new in_window.org.pkijs.asn1.INTEGER({ value: this.version }));
@@ -5124,13 +5126,13 @@ function(in_window)
                 value: attrs
             }));
         }
-        // #endregion 
+        // #endregion
 
-        // #region Construct and return new ASN.1 schema for this object 
+        // #region Construct and return new ASN.1 schema for this object
         return (new in_window.org.pkijs.asn1.SEQUENCE({
             value: output_array
         }));
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.PKCS8.prototype.toJSON =
@@ -5153,21 +5155,21 @@ function(in_window)
         return _object;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
-    // #region Simplified structure for working with X.509 certificate chains 
+    // #region Simplified structure for working with X.509 certificate chains
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT_CHAIN =
     function()
     {
-        // #region Internal properties of the object 
+        // #region Internal properties of the object
         /// <field name="trusted_certs" type="Array" elementType="in_window.org.pkijs.simpl.CERT">Array of pre-defined trusted (by user) certificates</field>
         this.trusted_certs = new Array();
         /// <field name="certs" type="Array" elementType="in_window.org.pkijs.simpl.CERT">Array with certificate chain. Could be only one end-user certificate in there!</field>
-        this.certs = new Array(); 
+        this.certs = new Array();
         /// <field name="crls" type="Array" elementType="in_window.org.pkijs.simpl.CRL">Array of all CRLs for all certificates from certificate chain</field>
-        this.crls = new Array(); 
-        // #endregion 
+        this.crls = new Array();
+        // #endregion
 
         // #region Initialize internal properties by input values
         if(arguments[0] instanceof Object)
@@ -5176,13 +5178,13 @@ function(in_window)
             this.certs = arguments[0].certs || new Array();
             this.crls = arguments[0].crls || new Array();
         }
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT_CHAIN.prototype.sort =
     function()
     {
-        // #region Initial variables 
+        // #region Initial variables
         /// <var type="Array" elementType="in_window.org.pkijs.simpl.CERT">Array of sorted certificates</var>
         var sorted_certs = new Array();
 
@@ -5193,9 +5195,9 @@ function(in_window)
         var check_date = new Date();
 
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Initial checks 
+        // #region Initial checks
         if(certs.length === 0)
             return new Promise(function(resolve, reject)
             {
@@ -5205,9 +5207,9 @@ function(in_window)
                     result_message: "Certificate's array can not be empty"
                 });
             });
-        // #endregion 
+        // #endregion
 
-        // #region Find end-user certificate 
+        // #region Find end-user certificate
         var end_user_index = -1;
 
         for(var i = 0; i < certs.length; i++)
@@ -5307,9 +5309,9 @@ function(in_window)
         }
 
         certs.splice(end_user_index, 1);
-        // #endregion 
+        // #endregion
 
-        // #region Check that end-user certificate was found 
+        // #region Check that end-user certificate was found
         if(sorted_certs.length === 0)
             return new Promise(function(resolve, reject)
             {
@@ -5319,9 +5321,9 @@ function(in_window)
                     result_message: "Can't find end-user certificate"
                 });
             });
-        // #endregion 
+        // #endregion
 
-        // #region Return if there is only one certificate in certificate's array 
+        // #region Return if there is only one certificate in certificate's array
         if(certs.length === 0)
         {
             if(sorted_certs[0].issuer.isEqual(sorted_certs[0].subject) === true)
@@ -5346,7 +5348,7 @@ function(in_window)
             }
 
         }
-        // #endregion 
+        // #endregion
 
         /// <var type="in_window.org.pkijs.simpl.CERT">Current certificate (to find issuer for)</var>
         var current_certificate = sorted_certs[0];
@@ -5358,11 +5360,11 @@ function(in_window)
             /// <param name="subject_certificate" type="in_window.org.pkijs.simpl.CERT">Certificate for testing (subject)</param>
             /// <param name="issuer_certificate" type="in_window.org.pkijs.simpl.CERT">Certificate for issuer of subject certificate</param>
 
-            // #region Initial variables 
+            // #region Initial variables
             var sequence = Promise.resolve()
-            // #endregion 
+            // #endregion
 
-            // #region Check validity period for subject certificate 
+            // #region Check validity period for subject certificate
             sequence = sequence.then(
                 function()
                 {
@@ -5380,9 +5382,9 @@ function(in_window)
                     }
                 }
                 );
-            // #endregion 
+            // #endregion
 
-            // #region Give ability to not provide CRLs (all certificates assume to be valid) 
+            // #region Give ability to not provide CRLs (all certificates assume to be valid)
             if(_this.crls.length === 0)
                 return sequence.then(
                     function()
@@ -5390,9 +5392,9 @@ function(in_window)
                         return new Promise(function(resolve, reject) { resolve(); });
                     }
                     );
-            // #endregion 
+            // #endregion
 
-            // #region Find correct CRL for "issuer_certificate" 
+            // #region Find correct CRL for "issuer_certificate"
             function find_crl(index)
             {
                 return _this.crls[index].verify({ issuerCertificate: issuer_certificate }).then(
@@ -5437,13 +5439,13 @@ function(in_window)
                     return find_crl(0);
                 }
                 );
-            // #endregion 
+            // #endregion
 
-            // #region Check that subject certificate is not in the CRL 
+            // #region Check that subject certificate is not in the CRL
             sequence = sequence.then(
                 function(crl)
                 {
-                    /// <param name="crl" type="in_window.org.pkijs.simpl.CRL">CRL for issuer's certificate</param>                
+                    /// <param name="crl" type="in_window.org.pkijs.simpl.CRL">CRL for issuer's certificate</param>
 
                     if(crl.isCertificateRevoked({ certificate: subject_certificate }) === true)
                         return new Promise(function(resolve, reject)
@@ -5463,7 +5465,7 @@ function(in_window)
                     return new Promise(function(resolve, reject) { resolve(); });
                 }
                 );
-            // #endregion 
+            // #endregion
 
             return sequence;
         }
@@ -5480,7 +5482,7 @@ function(in_window)
 
                     if(current_certificate.issuer.isEqual(current_certificate.subject) === true)
                     {
-                        // #region Check that the "self-signed" certificate there is in "trusted_certs" array 
+                        // #region Check that the "self-signed" certificate there is in "trusted_certs" array
                         var found = (_this.trusted_certs.length === 0) ? true : false; // If user did not set "trusted_certs" then we have an option to trust any self-signed certificate as root
 
                         for(var i = 0; i < _this.trusted_certs.length; i++)
@@ -5503,7 +5505,7 @@ function(in_window)
                                     result_message: "Self-signed root certificate not in \"trusted certificates\" array"
                                 });
                             });
-                        // #endregion 
+                        // #endregion
 
                         return (current_certificate.verify()).then( // Verifing last, self-signed certificate
                             function(result)
@@ -5652,28 +5654,28 @@ function(in_window)
                     });
             }
         }
-        // #endregion   
+        // #endregion
 
-        // #region Find certificates for all issuers 
+        // #region Find certificates for all issuers
         return outer();
-        // #endregion 
+        // #endregion
     }
     //**************************************************************************************
     in_window.org.pkijs.simpl.CERT_CHAIN.prototype.verify =
     function()
     {
-        // #region Initial checks 
+        // #region Initial checks
         if(this.certs.length === 0)
             return new Promise(function(resolve, reject) { reject("Empty certificate array"); });
-        // #endregion 
+        // #endregion
 
-        // #region Initial variables 
+        // #region Initial variables
         var sequence = Promise.resolve();
 
         var _this = this;
-        // #endregion 
+        // #endregion
 
-        // #region Get input variables 
+        // #region Get input variables
         var initial_policy_set = new Array();
         initial_policy_set.push("2.5.29.32.0"); // "anyPolicy"
 
@@ -5729,22 +5731,22 @@ function(in_window)
         var required_name_forms = initial_required_name_forms;
 
         var path_depth = 1;
-        // #endregion 
+        // #endregion
 
-        // #region Sorting certificates in the chain array 
+        // #region Sorting certificates in the chain array
         sequence = (in_window.org.pkijs.simpl.CERT_CHAIN.prototype.sort.call(this)).then(
             function(sorted_certs)
             {
                 _this.certs = sorted_certs;
             }
             );
-        // #endregion 
+        // #endregion
 
         // #region Work with policies
         sequence = sequence.then(
             function()
             {
-                // #region Support variables 
+                // #region Support variables
                 var all_policies = new Array(); // Array of all policies (string values)
                 all_policies.push("2.5.29.32.0"); // Put "anyPolicy" at first place
 
@@ -5758,7 +5760,7 @@ function(in_window)
 
                 var policy_mappings = new Array(_this.certs.length - 1); // Array of "PolicyMappings" for each certificate
                 var cert_policies = new Array(_this.certs.length - 1); // Array of "CertificatePolicies" for each certificate
-                // #endregion 
+                // #endregion
 
                 for(var i = (_this.certs.length - 2) ; i >= 0 ; i--, path_depth++)
                 {
@@ -5766,7 +5768,7 @@ function(in_window)
                     {
                         for(var j = 0; j < _this.certs[i].extensions.length; j++)
                         {
-                            // #region CertificatePolicies 
+                            // #region CertificatePolicies
                             if(_this.certs[i].extensions[j].extnID === "2.5.29.32")
                             {
                                 cert_policies[i] = _this.certs[i].extensions[j].parsedValue;
@@ -5775,7 +5777,7 @@ function(in_window)
                                 {
                                     var policy_index = (-1);
 
-                                    // #region Try to find extension in "all_policies" array 
+                                    // #region Try to find extension in "all_policies" array
                                     for(var s = 0; s < all_policies.length; s++)
                                     {
                                         if(_this.certs[i].extensions[j].parsedValue.certificatePolicies[k].policyIdentifier === all_policies[s])
@@ -5784,7 +5786,7 @@ function(in_window)
                                             break;
                                         }
                                     }
-                                    // #endregion 
+                                    // #endregion
 
                                     if(policy_index === (-1))
                                     {
@@ -5799,19 +5801,19 @@ function(in_window)
                                         (policies_and_certs[policy_index])[i] = true;
                                 }
                             }
-                            // #endregion 
+                            // #endregion
 
-                            // #region PolicyMappings 
+                            // #region PolicyMappings
                             if(_this.certs[i].extensions[j].extnID === "2.5.29.33")
                                 policy_mappings[i] = _this.certs[i].extensions[j].parsedValue;
-                            // #endregion 
+                            // #endregion
 
-                            // #region PolicyConstraints 
+                            // #region PolicyConstraints
                             if(_this.certs[i].extensions[j].extnID === "2.5.29.36")
                             {
                                 if(explicit_policy_indicator == false)
                                 {
-                                    // #region requireExplicitPolicy 
+                                    // #region requireExplicitPolicy
                                     if(_this.certs[i].extensions[j].parsedValue.requireExplicitPolicy === 0)
                                         explicit_policy_indicator = true;
                                     else
@@ -5826,9 +5828,9 @@ function(in_window)
                                             explicit_policy_pending = (explicit_policy_pending > _this.certs[i].extensions[j].parsedValue.requireExplicitPolicy) ? _this.certs[i].extensions[j].parsedValue.requireExplicitPolicy : explicit_policy_pending;
                                         }
                                     }
-                                    // #endregion 
+                                    // #endregion
 
-                                    // #region inhibitPolicyMapping 
+                                    // #region inhibitPolicyMapping
                                     if(_this.certs[i].extensions[j].parsedValue.inhibitPolicyMapping === 0)
                                         policy_mapping_inhibit_indicator = true;
                                     else
@@ -5843,10 +5845,10 @@ function(in_window)
                                             policy_mapping_inhibit_pending = (policy_mapping_inhibit_pending > _this.certs[i].extensions[j].parsedValue.requireExplicitPolicy) ? _this.certs[i].extensions[j].parsedValue.requireExplicitPolicy : policy_mapping_inhibit_pending;
                                         }
                                     }
-                                    // #endregion   
+                                    // #endregion
                                 }
                             }
-                            // #endregion 
+                            // #endregion
 
                             // #region InhibitAnyPolicy
                             if(_this.certs[i].extensions[j].extnID === "2.5.29.54")
@@ -5869,15 +5871,15 @@ function(in_window)
                                     }
                                 }
                             }
-                            // #endregion 
+                            // #endregion
                         }
 
-                        // #region Check "inhibit_any_policy_indicator" 
+                        // #region Check "inhibit_any_policy_indicator"
                         if(inhibit_any_policy_indicator === true)
                             delete (policies_and_certs[0])[i]; // Unset value to "undefined" for "anyPolicies" value for current certificate
-                        // #endregion 
+                        // #endregion
 
-                        // #region Combine information from certificate policies and policy mappings 
+                        // #region Combine information from certificate policies and policy mappings
                         if((typeof cert_policies[i] !== "undefined") &&
                            (typeof policy_mappings[i] !== "undefined") &&
                            (policy_mapping_inhibit_indicator === false))
@@ -5886,7 +5888,7 @@ function(in_window)
                             {
                                 var domainPolicy = "";
 
-                                // #region Find if current policy is in "mappings" array 
+                                // #region Find if current policy is in "mappings" array
                                 for(var n = 0; n < policy_mappings[i].mappings.length; n++)
                                 {
                                     if(policy_mappings[i].mappings[n].subjectDomainPolicy === cert_policies[i].certificatePolicies[m].policyIdentifier)
@@ -5895,20 +5897,20 @@ function(in_window)
                                         break;
                                     }
 
-                                    // #region Could be the case for some reasons 
+                                    // #region Could be the case for some reasons
                                     if(policy_mappings[i].mappings[n].issuerDomainPolicy === cert_policies[i].certificatePolicies[m].policyIdentifier)
                                     {
                                         domainPolicy = policy_mappings[i].mappings[n].subjectDomainPolicy;
                                         break;
                                     }
-                                    // #endregion 
+                                    // #endregion
                                 }
 
                                 if(domainPolicy === "")
                                     continue;
                                 // #endregion
 
-                                // #region Find the index of "domainPolicy"  
+                                // #region Find the index of "domainPolicy"
                                 var domainPolicy_index = (-1);
 
                                 for(var p = 0; p < all_policies.length; p++)
@@ -5919,17 +5921,17 @@ function(in_window)
                                         break;
                                     }
                                 }
-                                // #endregion 
+                                // #endregion
 
-                                // #region Change array value for "domainPolicy" 
+                                // #region Change array value for "domainPolicy"
                                 if(domainPolicy_index !== (-1))
                                     (policies_and_certs[domainPolicy_index])[i] = true; // Put "set" in "domainPolicy" cell for specific certificate
-                                // #endregion 
+                                // #endregion
                             }
                         }
-                        // #endregion 
+                        // #endregion
 
-                        // #region Process with "pending constraints" 
+                        // #region Process with "pending constraints"
                         if(explicit_policy_indicator === false)
                         {
                             if(pending_constraints[0] === true)
@@ -5968,7 +5970,7 @@ function(in_window)
                                 }
                             }
                         }
-                        // #endregion 
+                        // #endregion
                     }
                 }
 
@@ -5991,7 +5993,7 @@ function(in_window)
                     if(found === true)
                         auth_constr_policies.push(all_policies[i]);
                 }
-                // #endregion 
+                // #endregion
 
                 // #region Create "set of user-constrained policies"
                 var user_constr_policies = new Array();
@@ -6007,9 +6009,9 @@ function(in_window)
                         }
                     }
                 }
-                // #endregion 
+                // #endregion
 
-                // #region Combine output object 
+                // #region Combine output object
                 return {
                     result: (user_constr_policies.length > 0) ? true : false,
                     result_code: 0,
@@ -6019,10 +6021,10 @@ function(in_window)
                     explicit_policy_indicator: explicit_policy_indicator,
                     policy_mappings: policy_mappings
                 };
-                // #endregion 
+                // #endregion
             }
             );
-        // #endregion 
+        // #endregion
 
         // #region Work with name constraints
         sequence = sequence.then(
@@ -6036,31 +6038,31 @@ function(in_window)
                     /// <param name="constraint" type="String">Constraint for DNS from name</param>
                     /// <returns type="Boolean">Boolean result - valid or invalid the "name" against the "constraint"</returns>
 
-                    // #region Make a "string preparation" for both name and constrain 
+                    // #region Make a "string preparation" for both name and constrain
                     var name_prepared = in_window.org.pkijs.stringPrep(name);
                     var constraint_prepared = in_window.org.pkijs.stringPrep(constraint);
-                    // #endregion 
+                    // #endregion
 
-                    // #region Make a "splitted" versions of "constraint" and "name" 
+                    // #region Make a "splitted" versions of "constraint" and "name"
                     var name_splitted = name_prepared.split(".");
                     var constraint_splitted = constraint_prepared.split(".");
-                    // #endregion 
+                    // #endregion
 
-                    // #region Length calculation and additional check 
+                    // #region Length calculation and additional check
                     var name_len = name_splitted.length;
                     var constr_len = constraint_splitted.length;
 
                     if((name_len === 0) || (constr_len === 0) || (name_len < constr_len))
                         return false;
-                    // #endregion 
+                    // #endregion
 
-                    // #region Check that no part of "name" has zero length 
+                    // #region Check that no part of "name" has zero length
                     for(var i = 0; i < name_len; i++)
                     {
                         if(name_splitted[i].length === 0)
                             return false;
                     }
-                    // #endregion 
+                    // #endregion
 
                     // #region Check that no part of "constraint" has zero length
                     for(var i = 0; i < constr_len; i++)
@@ -6078,9 +6080,9 @@ function(in_window)
                             return false;
                         }
                     }
-                    // #endregion 
+                    // #endregion
 
-                    // #region Check that "name" has a tail as "constraint" 
+                    // #region Check that "name" has a tail as "constraint"
 
                     for(var i = 0; i < constr_len; i++)
                     {
@@ -6090,7 +6092,7 @@ function(in_window)
                         if(name_splitted[name_len - 1 - i].localeCompare(constraint_splitted[constr_len - 1 - i]) !== 0)
                             return false;
                     }
-                    // #endregion 
+                    // #endregion
 
                     return true;
                 }
@@ -6102,20 +6104,20 @@ function(in_window)
                     /// <param name="constraint" type="String">Constraint for e-mail address from name</param>
                     /// <returns type="Boolean">Boolean result - valid or invalid the "name" against the "constraint"</returns>
 
-                    // #region Make a "string preparation" for both name and constrain 
+                    // #region Make a "string preparation" for both name and constrain
                     var name_prepared = in_window.org.pkijs.stringPrep(name);
                     var constraint_prepared = in_window.org.pkijs.stringPrep(constraint);
-                    // #endregion 
+                    // #endregion
 
-                    // #region Make a "splitted" versions of "constraint" and "name" 
+                    // #region Make a "splitted" versions of "constraint" and "name"
                     var name_splitted = name_prepared.split("@");
                     var constraint_splitted = constraint_prepared.split("@");
-                    // #endregion 
+                    // #endregion
 
-                    // #region Splitted array length checking 
+                    // #region Splitted array length checking
                     if((name_splitted.length === 0) || (constraint_splitted.length === 0) || (name_splitted.length < constraint_splitted.length))
                         return false;
-                    // #endregion 
+                    // #endregion
 
                     if(constraint_splitted.length === 1)
                     {
@@ -6123,10 +6125,10 @@ function(in_window)
 
                         if(result)
                         {
-                            // #region Make a "splitted" versions of domain name from "constraint" and "name" 
+                            // #region Make a "splitted" versions of domain name from "constraint" and "name"
                             var ns = name_splitted[1].split(".");
                             var cs = constraint_splitted[0].split(".");
-                            // #endregion 
+                            // #endregion
 
                             if(cs[0].length === 0)
                                 return true;
@@ -6152,10 +6154,10 @@ function(in_window)
                     /// <param name="constraint" type="String">Constraint for uniformResourceIdentifier from name</param>
                     /// <returns type="Boolean">Boolean result - valid or invalid the "name" against the "constraint"</returns>
 
-                    // #region Make a "string preparation" for both name and constrain 
+                    // #region Make a "string preparation" for both name and constrain
                     var name_prepared = in_window.org.pkijs.stringPrep(name);
                     var constraint_prepared = in_window.org.pkijs.stringPrep(constraint);
-                    // #endregion 
+                    // #endregion
 
                     // #region Find out a major URI part to compare with
                     var ns = name_prepared.split("/");
@@ -6176,16 +6178,16 @@ function(in_window)
                             }
                         }
                     }
-                    // #endregion 
+                    // #endregion
 
                     var result = compare_dNSName(name_prepared, constraint_prepared);
 
                     if(result)
                     {
-                        // #region Make a "splitted" versions of "constraint" and "name" 
+                        // #region Make a "splitted" versions of "constraint" and "name"
                         var name_splitted = name_prepared.split(".");
                         var constraint_splitted = constraint_prepared.split(".");
-                        // #endregion 
+                        // #endregion
 
                         if(constraint_splitted[0].length === 0)
                             return true;
@@ -6208,12 +6210,12 @@ function(in_window)
                     /// <param name="constraint" type="in_window.org.pkijs.asn1.OCTETSTRING">Constraint for iPAddress from name</param>
                     /// <returns type="Boolean">Boolean result - valid or invalid the "name" against the "constraint"</returns>
 
-                    // #region Common variables 
+                    // #region Common variables
                     var name_view = new Uint8Array(name.value_block.value_hex);
                     var constraint_view = new Uint8Array(constraint.value_block.value_hex);
-                    // #endregion 
+                    // #endregion
 
-                    // #region Work with IPv4 addresses 
+                    // #region Work with IPv4 addresses
                     if((name_view.length === 4) && (constraint_view.length === 8))
                     {
                         for(var i = 0; i < 4; i++)
@@ -6224,9 +6226,9 @@ function(in_window)
 
                         return true;
                     }
-                    // #endregion 
+                    // #endregion
 
-                    // #region Work with IPv6 addresses 
+                    // #region Work with IPv6 addresses
                     if((name_view.length === 16) && (constraint_view.length === 32))
                     {
                         for(var i = 0; i < 16; i++)
@@ -6237,7 +6239,7 @@ function(in_window)
 
                         return true;
                     }
-                    // #endregion 
+                    // #endregion
 
                     return false;
                 }
@@ -6250,18 +6252,18 @@ function(in_window)
                     /// <param name="any" type="Boolean">Boolean flag - should be comparision interrupted after first match or we need to match all "constraints" parts</param>
                     /// <returns type="Boolean">Boolean result - valid or invalid the "name" against the "constraint"</returns>
 
-                    // #region Initial check 
+                    // #region Initial check
                     if((name.types_and_values.length === 0) || (constraint.types_and_values.length === 0))
                         return true;
 
                     if(name.types_and_values.length < constraint.types_and_values.length)
                         return false;
-                    // #endregion 
+                    // #endregion
 
-                    // #region Initial variables 
+                    // #region Initial variables
                     var result = true;
                     var name_start = 0;
-                    // #endregion 
+                    // #endregion
 
                     for(var i = 0; i < constraint.types_and_values.length; i++)
                     {
@@ -6292,30 +6294,30 @@ function(in_window)
 
                     return (name_start === 0) ? false : result;
                 }
-                // #endregion 
+                // #endregion
 
-                // #region Check a result from "policy checking" part  
+                // #region Check a result from "policy checking" part
                 if(policy_result.result === false)
                     return policy_result;
-                // #endregion 
+                // #endregion
 
-                // #region Check all certificates, excluding "trust anchor" 
+                // #region Check all certificates, excluding "trust anchor"
                 path_depth = 1;
 
                 for(var i = (_this.certs.length - 2) ; i >= 0 ; i--, path_depth++)
                 {
-                    // #region Support variables 
+                    // #region Support variables
                     var subject_alt_names = new Array();
 
                     var cert_permitted_subtrees = new Array();
                     var cert_excluded_subtrees = new Array();
-                    // #endregion 
+                    // #endregion
 
                     if("extensions" in _this.certs[i])
                     {
                         for(var j = 0; j < _this.certs[i].extensions.length; j++)
                         {
-                            // #region NameConstraints 
+                            // #region NameConstraints
                             if(_this.certs[i].extensions[j].extnID === "2.5.29.30")
                             {
                                 if("permittedSubtrees" in _this.certs[i].extensions[j].parsedValue)
@@ -6324,21 +6326,21 @@ function(in_window)
                                 if("excludedSubtrees" in _this.certs[i].extensions[j].parsedValue)
                                     cert_excluded_subtrees = cert_excluded_subtrees.concat(_this.certs[i].extensions[j].parsedValue.excludedSubtrees);
                             }
-                            // #endregion   
+                            // #endregion
 
-                            // #region SubjectAltName 
+                            // #region SubjectAltName
                             if(_this.certs[i].extensions[j].extnID === "2.5.29.17")
                                 subject_alt_names = subject_alt_names.concat(_this.certs[i].extensions[j].parsedValue.altNames);
-                            // #endregion 
+                            // #endregion
 
-                            // #region PKCS#9 e-mail address 
+                            // #region PKCS#9 e-mail address
                             if(_this.certs[i].extensions[j].extnID === "1.2.840.113549.1.9.1")
                                 email_addresses.push(_this.certs[i].extensions[j].parsedValue.value);
-                            // #endregion 
+                            // #endregion
                         }
                     }
 
-                    // #region Checking for "required name forms" 
+                    // #region Checking for "required name forms"
                     var form_found = (required_name_forms.length > 0) ? false : true;
 
                     for(var j = 0; j < required_name_forms.length; j++)
@@ -6380,10 +6382,10 @@ function(in_window)
                             reject(policy_result);
                         });
                     }
-                    // #endregion 
+                    // #endregion
 
-                    // #region Checking for "permited sub-trees" 
-                    // #region Make groups for all types of constraints 
+                    // #region Checking for "permited sub-trees"
+                    // #region Make groups for all types of constraints
                     var constr_groups = new Array(); // Array of array for groupped constraints
                     constr_groups[0] = new Array(); // rfc822Name
                     constr_groups[1] = new Array(); // dNSName
@@ -6395,39 +6397,39 @@ function(in_window)
                     {
                         switch(permitted_subtrees[j].base.NameType)
                         {
-                            // #region rfc822Name 
+                            // #region rfc822Name
                             case 1:
                                 constr_groups[0].push(permitted_subtrees[j]);
                                 break;
-                            // #endregion 
-                            // #region dNSName 
+                            // #endregion
+                            // #region dNSName
                             case 2:
                                 constr_groups[1].push(permitted_subtrees[j]);
                                 break;
-                            // #endregion 
-                            // #region directoryName 
+                            // #endregion
+                            // #region directoryName
                             case 4:
                                 constr_groups[2].push(permitted_subtrees[j]);
                                 break;
-                            // #endregion 
-                            // #region uniformResourceIdentifier 
+                            // #endregion
+                            // #region uniformResourceIdentifier
                             case 6:
                                 constr_groups[3].push(permitted_subtrees[j]);
                                 break;
-                            // #endregion 
-                            // #region iPAddress 
+                            // #endregion
+                            // #region iPAddress
                             case 7:
                                 constr_groups[4].push(permitted_subtrees[j]);
                                 break;
-                            // #endregion 
-                            // #region default 
+                            // #endregion
+                            // #region default
                             default:;
-                            // #endregion 
+                            // #endregion
                         }
                     }
-                    // #endregion   
+                    // #endregion
 
-                    // #region Check name constraints groupped by type, one-by-one 
+                    // #region Check name constraints groupped by type, one-by-one
                     for(var p = 0; p < 5; p++)
                     {
                         var group_permitted = false;
@@ -6437,7 +6439,7 @@ function(in_window)
                         {
                             switch(p)
                             {
-                                // #region rfc822Name 
+                                // #region rfc822Name
                                 case 0:
                                     if(subject_alt_names.length >= 0)
                                     {
@@ -6459,8 +6461,8 @@ function(in_window)
                                         }
                                     }
                                     break;
-                                // #endregion 
-                                // #region dNSName 
+                                // #endregion
+                                // #region dNSName
                                 case 1:
                                     if(subject_alt_names.length > 0)
                                     {
@@ -6471,13 +6473,13 @@ function(in_window)
                                         }
                                     }
                                     break;
-                                // #endregion 
-                                // #region directoryName 
+                                // #endregion
+                                // #region directoryName
                                 case 2:
                                     group_permitted = compare_directoryName(_this.certs[i].subject, group[j].base.Name);
                                     break;
-                                // #endregion 
-                                // #region uniformResourceIdentifier 
+                                // #endregion
+                                // #region uniformResourceIdentifier
                                 case 3:
                                     if(subject_alt_names.length > 0)
                                     {
@@ -6488,8 +6490,8 @@ function(in_window)
                                         }
                                     }
                                     break;
-                                // #endregion 
-                                // #region iPAddress 
+                                // #endregion
+                                // #region iPAddress
                                 case 4:
                                     if(subject_alt_names.length > 0)
                                     {
@@ -6500,10 +6502,10 @@ function(in_window)
                                         }
                                     }
                                     break;
-                                // #endregion 
-                                // #region default 
+                                // #endregion
+                                // #region default
                                 default:;
-                                // #endregion 
+                                // #endregion
                             }
 
                             if(group_permitted)
@@ -6522,17 +6524,17 @@ function(in_window)
                             });
                         }
                     }
-                    // #endregion 
-                    // #endregion 
+                    // #endregion
+                    // #endregion
 
-                    // #region Checking for "excluded sub-trees" 
+                    // #region Checking for "excluded sub-trees"
                     var excluded = false;
 
                     for(var j = 0; j < excluded_subtrees.length; j++)
                     {
                         switch(excluded_subtrees[j].base.NameType)
                         {
-                            // #region rfc822Name 
+                            // #region rfc822Name
                             case 1:
                                 if(subject_alt_names.length >= 0)
                                 {
@@ -6554,8 +6556,8 @@ function(in_window)
                                     }
                                 }
                                 break;
-                            // #endregion 
-                            // #region dNSName 
+                            // #endregion
+                            // #region dNSName
                             case 2:
                                 if(subject_alt_names.length > 0)
                                 {
@@ -6566,13 +6568,13 @@ function(in_window)
                                     }
                                 }
                                 break;
-                            // #endregion 
-                            // #region directoryName 
+                            // #endregion
+                            // #region directoryName
                             case 4:
                                 excluded = excluded || compare_directoryName(_this.certs[i].subject, excluded_subtrees[j].base.Name);
                                 break;
-                            // #endregion 
-                            // #region uniformResourceIdentifier 
+                            // #endregion
+                            // #region uniformResourceIdentifier
                             case 6:
                                 if(subject_alt_names.length > 0)
                                 {
@@ -6583,8 +6585,8 @@ function(in_window)
                                     }
                                 }
                                 break;
-                            // #endregion 
-                            // #region iPAddress 
+                            // #endregion
+                            // #region iPAddress
                             case 7:
                                 if(subject_alt_names.length > 0)
                                 {
@@ -6595,10 +6597,10 @@ function(in_window)
                                     }
                                 }
                                 break;
-                            // #endregion 
-                            // #region default 
+                            // #endregion
+                            // #region default
                             default:; // No action, but probably here we need to create a warning for "malformed constraint"
-                            // #endregion 
+                            // #endregion
                         }
 
                         if(excluded)
@@ -6616,24 +6618,24 @@ function(in_window)
                             reject(policy_result);
                         });
                     }
-                    // #endregion 
+                    // #endregion
 
-                    // #region Append "cert_..._subtrees" to "..._subtrees" 
+                    // #region Append "cert_..._subtrees" to "..._subtrees"
                     permitted_subtrees = permitted_subtrees.concat(cert_permitted_subtrees);
                     excluded_subtrees = excluded_subtrees.concat(cert_excluded_subtrees);
-                    // #endregion   
+                    // #endregion
                 }
-                // #endregion 
+                // #endregion
 
                 return policy_result;
             }
             );
-        // #endregion   
+        // #endregion
 
         return sequence;
     }
     //**************************************************************************************
-    // #endregion 
+    // #endregion
     //**************************************************************************************
 }
 )(typeof exports !== "undefined" ? exports : window);
