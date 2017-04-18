@@ -12,15 +12,15 @@ You can use it to create signed X.509 certificate by yourself.
 
 2. build project
 
-    ```
-$ git clone https://github.com/qleeAI/create-cert.git
-$ cd create-cert
-$ npm install
-    ```
+```
+   * git clone https://github.com/qleeAI/create-cert.git
+   * cd create-cert
+   * npm install
+```
 
 3. open in webbroswer
 
-    open create-cert.html throuh web broswer
+   open create-cert.html throuh web broswer
 
 
 ## online demo
