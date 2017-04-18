@@ -8,6 +8,9 @@ import CertificateRevocationList from "pkijs/src/CertificateRevocationList";
 import { stringToArrayBuffer, bufferToHexCodes } from "pvutils";
 import { getCrypto, getAlgorithmParameters, setEngine } from "pkijs/src/common";
 import BasicConstraints from "pkijs/src/BasicConstraints";
+
+import GeneralName from "pkijs/src/GeneralName";
+import GeneralNames from "pkijs/src/GeneralNames";
 //*********************************************************************************
 
 let certificateBuffer = new ArrayBuffer(0); // ArrayBuffer with loaded or created CERT
@@ -29,7 +32,6 @@ function checkCACertificate() {
     }
 
     if (ty == "upload") {
-        console.log("upload: ", CACertificateInfo);
         return CACertificateInfo.upload;
     }
 
@@ -81,7 +83,6 @@ function handleFileCACert(input) {
             const certificate = new Certificate({schema: asn1.result});
             //const certificate = new org.pkijs.simpl.CERT({schema:asn1.result});
             //document.write(JSON.stringify(certificate.subject.toJSON()));
-            console.log("Certificate: ", certificate);
             /*
             var names = extract_entity(certificate.subject);
             var text = "";
@@ -137,7 +138,6 @@ function handleFileCAPrivateKey(input) {
                 console.log("Error parse privatekey: " + err.message);
             });
 
-            console.log("OK END");
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
@@ -265,8 +265,6 @@ function createCertificateFinal(certificate, issuerPrivateKey, signAlg, hashAlg)
     sequence = sequence.then(result =>
     {
         privateKeyBuffer = result;
-        console.log("cert: ", certificate);
-        console.log("pkey: ", privateKey);
         return {
             certificate: certificate,
             privateKey: privateKey
@@ -285,9 +283,9 @@ function createCACert()
     var countryCode       = document.getElementById("ca-country-code").value;
     var stateName         = document.getElementById("ca-state-name").value;
     var localityName      = document.getElementById("ca-locality-name").value;
-    console.log("countryCode: ", countryCode);
+
     countryCode = countryCode.toUpperCase();
-    console.log("countryCode2: ", countryCode.toUpperCase());
+
     var names = {
         commonName:commonName,
         countryCode:countryCode,
@@ -315,8 +313,10 @@ function createCACert()
 
     return createCertificateFinal(certificate, null, "RSASSA-PKCS1-v1_5", "SHA-256").then(result =>
     {
-        console.log("result: ", result);
         privateKey = result.privateKey;
+        CACertificateInfo["created"].cert = certificate;
+        CACertificateInfo["created"].subject = certificate.subject;
+        CACertificateInfo["created"].privateKey = privateKey;
     }) .
     then(() =>
     {
@@ -338,6 +338,14 @@ function createCACert()
     });
 }
 
+
+function getSubjectAltNames() {
+    var elem = document.getElementById("subject-alt-name");
+    var str = elem.value.toLowerCase();
+    var strs = str.split(/[ ,]+/);
+
+    return strs;
+}
 
 function createCert() {
     var commonName       = document.getElementById("common-name").value;
@@ -365,7 +373,6 @@ function createCert() {
         console.log("Not ca certificate defined");
         return;
     }
-    console.log("createCert called");
 
     const certificate = new Certificate();
     let privateKey;
@@ -377,7 +384,6 @@ function createCert() {
     setSerialNumber(certificate, Date.now());
 
     if (CACert.subject) {
-        console.log("issuer: ", CACert.subject);
         certificate.issuer = CACert.subject;
     } else {
         setEntity(certificate.issuer, names)
@@ -389,10 +395,14 @@ function createCert() {
     //setCABit(certificate, true, 2);
     //setKeyUsage(certificate, false, false, false, false, false, true, false);
 
+    var names = getSubjectAltNames();
+    if (names) {
+        setAltName(certificate, names);
+    }
+
     //if (CACert.subject && CACert.privateKey) {
     return createCertificateFinal(certificate, CACert.privateKey, "RSASSA-PKCS1-v1_5", "SHA-256").then(result =>
     {
-        console.log("result: ", result);
         privateKey = result.privateKey;
     }) .
     then(() =>
@@ -414,18 +424,6 @@ function createCert() {
         });
     });
 
-}
-
-function getSubjectAltNames() {
-    var names = new Array();
-    names.push("baidu.com");
-    names.push("baidu.cn");
-
-    var elem = document.getElementById("subject-alt-name");
-    var str = elem.value.toLowerCase();
-    var strs = str.split(/[ ,]+/);
-
-    return strs;
 }
 
 
@@ -520,16 +518,16 @@ function setKeyUsage(cert, digitalSignature, nonRepudiation, keyEncipherment, da
 function setAltName(cert, names) {
     var generalNames = new Array();
     for (var i = 0; i < names.length; i++) {
-        generalNames.push(new org.pkijs.simpl.GENERAL_NAME({
-            NameType: 2,
-            Name: names[i]
+        generalNames.push(new GeneralName({
+            type: 2,
+            value: names[i]
         }));
     }
 
-    var altNames = new org.pkijs.simpl.GENERAL_NAMES({
+    var altNames = new GeneralNames({
         names: generalNames
     })
-    cert.extensions.push(new org.pkijs.simpl.EXTENSION({
+    cert.extensions.push(new Extension({
         extnID: "2.5.29.17",
         extnValue: altNames.toSchema().toBER(false),
     }));
