@@ -126,6 +126,18 @@
 
     <p class="header-block">How To Sign Certificate</p2>
     <div class="border-block">
+        <div style="border:1px solid black;">
+        <div style="float:left; width:80%;">
+            <a id="sign-method">How TO Sign: upload</a>
+        </div>
+
+        <div style="float:left; width:20%;">
+            <a display="" onClick="openSetupOnClick('select-sign-method')">Setup</a>
+        </div>
+        <div style="clear:both;"></div>
+        </div>
+
+        <div id="select-sign-method" style="display:none;">
         <form>
             <input type="radio" name="whereisca" value="self-signed" checked onClick="handleWhereIsCA()"><label>self-signed</label>
             <input type="radio" name="whereisca" value="upload" onClick="handleWhereIsCA()"><label>upload</label>
@@ -191,13 +203,15 @@
             </section>
 
             <section id="ca-private-key">
-                <h1>Private Key in PEM Format</h1>
+                 <h1>Private Key in PEM Format</h1>
                 <a id="ca-private-key-download" download="ca.key">Download Private Key</a>
                 <a onClick="copyToClipboard('ca-private-key-pem')">Copy</a>
                 <pre id="ca-private-key-pem"></pre>
             </section>
         </div>
+        </div>
     </div>
+        </div>
 
     <p class="header-block">Create Certificate</p>
     <div id="certificate-block" class="border-block">

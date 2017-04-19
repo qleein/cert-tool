@@ -42,6 +42,17 @@ function checkCACertificate() {
     return false;
 }
 
+
+function openSetupOnClick(id) {
+    var elem = document.getElementById(id)
+    if (elem) {
+        console.log("elem: ", elem)
+        elem.style.display = "block";
+    }
+    console.log("on click");
+}
+
+
 function copyToClipboard(id) {
     var elem = document.getElementById(id);
     var text = elem.textContent;
@@ -705,6 +716,7 @@ context("Hack for Rollup.js", () =>
     handleFileCAPrivateKey();
     createCACert();
     createCert();
-    copyToClipboard(elem)
+    copyToClipboard();
+    openSetupOnClick();
 });
 //*********************************************************************************
