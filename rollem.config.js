@@ -11,6 +11,7 @@ window.handleFileCACert = handleFileCACert;
 window.handleFileCAPrivateKey = handleFileCAPrivateKey;
 window.createCACert = createCACert;
 window.createCert = createCert;
+window.copyToClipboard = copyToClipboard;
 function context(name, func) {}`,
         plugins: [
             rollupNodeResolve({ jsnext: true, main: true })

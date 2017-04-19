@@ -186,12 +186,14 @@
             <section id="ca-certificate">
                 <h1>Certificate in PEM Format</h1>
                 <a id="ca-certificate-download" download="ca.cert">Download Certificate</a>
+                <a onClick="copyToClipboard('ca-cert-pem')">Copy</a>
                 <pre id="ca-cert-pem"></pre>
             </section>
 
             <section id="ca-private-key">
                 <h1>Private Key in PEM Format</h1>
                 <a id="ca-private-key-download" download="ca.key">Download Private Key</a>
+                <a onClick="copyToClipboard('ca-private-key-pem')">Copy</a>
                 <pre id="ca-private-key-pem"></pre>
             </section>
         </div>
@@ -238,12 +240,14 @@
         <section id="certificate">
             <h1>Certificate in PEM Format</h1>
             <a id="certificate-download" download="certificate.pem">Download Certificate</a>
+            <a onClick="copyToClipboard('certificate-pem')">Copy</a>
             <pre id="certificate-pem"></pre>
         </section>
 
         <section id="private-key">
             <h1>Private Key in PEM Format</h1>
             <a id="private-key-download" download="privatekey.pem">Download Private Key</a>
+            <a onClick="copyToClipboard('private-key-pem')">Copy</a>
             <pre id="private-key-pem"></pre>
         </section>
     </div>
