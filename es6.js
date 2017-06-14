@@ -705,6 +705,6 @@ context("Hack for Rollup.js", () =>
     handleFileCAPrivateKey();
     createCACert();
     createCert();
-    copyToClipboard(elem)
+    copyToClipboard()
 });
 //*********************************************************************************
