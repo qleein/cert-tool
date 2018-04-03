@@ -13,7 +13,7 @@ You can use it to create signed X.509 certificate by yourself.
 2. build project
 
 ```
-   * git clone https://github.com/qleeAI/create-cert.git
+   * git clone https://github.com/qlees/create-cert.git
    * cd create-cert
    * npm install
 ```
