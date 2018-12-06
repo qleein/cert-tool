@@ -3,6 +3,7 @@ import Certificate from "pkijs/src/Certificate";
 import AttributeTypeAndValue from "pkijs/src/AttributeTypeAndValue";
 import Extension from "pkijs/src/Extension";
 import RSAPublicKey from "pkijs/src/RSAPublicKey";
+import RSAPrivateKey from "pkijs/src/RSAPrivateKey";
 import CertificateChainValidationEngine from "pkijs/src/CertificateChainValidationEngine";
 import CertificateRevocationList from "pkijs/src/CertificateRevocationList";
 import { stringToArrayBuffer, bufferToHexCodes } from "pvutils";
@@ -270,7 +271,7 @@ function createCertificateFinal(certificate, issuerPrivateKey, signAlg, hashAlg)
 	sequence = sequence.then(() =>
     {
         signPrivateKey = issuerPrivateKey || privateKey;
-		certificate.sign(signPrivateKey, hashAlg)
+		return certificate.sign(signPrivateKey, hashAlg)
     }, error => Promise.reject(`Error during exporting public key: ${error}`));
 	//endregion
 
@@ -694,6 +695,68 @@ function extract_entity(entity) {
     return names;
 }
 
+let uploadCache = {};
+
+function handleOriginCert(evt) {
+    var radio = document.getElementsByName("originformat");
+    document.getElementById("origin-der").style.display = "none";
+    document.getElementById("origin-pkcs12").style.display = "none";
+    document.getElementById("origin-jks").style.display = "none";
+
+    for (var i = 0; i < radio.length; i++) {
+        if (!radio[i].checked) {
+            continue;
+        }
+
+        var elem;
+        if (radio[i].value == "der") {
+            elem = document.getElementById("origin-der");
+            elem.style.display = "block";
+        } else if (radio[i].value == "new"){
+            elem = document.getElementById("create-ca");
+            elem.style.display = "block";
+        } else {
+            CACertificateInfo.type = "self-signed";
+            elem = document.getElementById("self-signed");
+        }
+    }
+}
+
+function handleUploadDerCert(input) {
+    const tempReader = new FileReader();
+    const currentFiles = input.files;
+    tempReader.onload =
+        function(event)
+        {
+            var buf = event.target.result;
+            const asn1 = asn1js.fromBER(buf);
+            const certificate = new Certificate({schema: asn1.result});
+            uploadCache["cert"] = certificate;
+            var pemCert = convertBinaryToPem(certificate.toSchema(true).toBER(false), "CERTIFICATE");
+            document.getElementById("certificate-pem").textContent = pemCert;
+            var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemCert);
+            document.getElementById("certificate-download").setAttribute("href", pemUrl);
+        };
+    tempReader.readAsArrayBuffer(currentFiles[0]);
+}
+
+function handleUploadDerPrivateKey(input) {
+    const tempReader = new FileReader();
+    const currentFiles = input.files;
+    tempReader.onload =
+        function(event)
+        {
+            var buf = event.target.result;
+            const asn1 = asn1js.fromBER(buf);
+            const certificate = new RSAPrivateKey({schema: asn1.result});
+
+            var pemPrivateKey = convertBinaryToPem(certificate.toSchema(true).toBER(false), "PRIVATE KEY");
+            document.getElementById("private-key-pem").textContent = pemPrivateKey;
+            var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPrivateKey);
+            document.getElementById("private-key-download").setAttribute("href", pemUrl);
+        };
+    tempReader.readAsArrayBuffer(currentFiles[0]);
+}
 
 
 context("Hack for Rollup.js", () =>
@@ -705,6 +768,9 @@ context("Hack for Rollup.js", () =>
     handleFileCAPrivateKey();
     createCACert();
     createCert();
-    copyToClipboard()
+    copyToClipboard();
+    handleOriginCert();
+    handleUploadDerCert();
+    handleUploadDerPrivateKey();
 });
 //*********************************************************************************

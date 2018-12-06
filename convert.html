@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>X.509 Certificate Creater</title>
+
+    <script src="bundle.js"></script>
+
+    <style type="text/css">
+        body{background:#EFEFEF;font:normal 14px/16px Helvetica, Arial, sans-serif;}
+        .wrapper{
+            width:600px;
+            margin:50px auto;
+            padding:50px;
+            border:solid 2px #CCC;
+            border-radius:10px;
+            -webkit-border-radius:10px;
+            box-shadow:0 0 12px 3px #CDCDCD;
+            -webkit-box-shadow:0 0 12px 3px #CDCDCD;
+            background:#FFF;
+        }
+        label{
+            font:bold 16px/20px Helvetica, Arial, sans-serif;
+            margin:0 0 8px;
+        }
+        textarea{
+            width:500px;
+            border:solid 1px #999;
+            border-radius:5px;
+            -webkit-border-radius:5px;
+            height:340px;
+            font:normal 12px/15px monospace;
+            display:block;
+            margin:0 0 12px;
+            box-shadow:0 0 5px 5px #EFEFEF inset;
+            -webkit-box-shadow:0 0 5px 5px #EFEFEF inset;
+            padding:20px;
+           resize: none;
+        }
+        a{
+            display:inline-block;
+            padding:5px 15px;
+            background:#ACD0EC;
+            border:solid 1px #4C6181;
+            color:#000;
+            font:normal 14px/16px Helvetica, Arial, sans-serif;
+        }
+        a:hover{
+            background:#DAEBF8;
+            cursor:pointer;
+        }
+        .header-block {
+            margin-top:30px;
+            font:bold 16px/20px Helvetica, Arial, sans-serif;
+        }
+        .border-block{
+            border:solid 2px #999;
+            border-radius:5px;
+            -webkit-border-radius:5px;
+            margin:10px 0 0;
+            padding:20px 30px;
+            background:#F0F4FF;
+        }
+        .border-block h2{
+            margin:0 0 16px;
+            font:bold 22px/24px Helvetica, Arial, sans-serif;
+        }
+        .border-block p{
+            margin:0 0 12px;
+        }
+        .border-block p .type{
+            font-weight:bold;
+            display:inline-block;
+            width:176px;
+        }
+        .border-block .two-col{
+            overflow:hidden;
+            margin:0 0 16px;
+        }
+        .border-block .two-col .subject{
+            width:180px;
+            font-weight:bold;
+            margin:0 0 12px;
+            float:left;
+        }
+        .border-block .two-col #cert-attributes{
+            margin:0;
+            padding:0;
+            float:left;
+            list-style:none;
+        }
+        .border-block .two-col #cert-attributes li p{
+            margin:0;
+        }
+        .border-block .two-col #cert-attributes li p span{
+            width:40px;
+            display:inline-block;
+            margin:0 0 5px;
+        }
+        .border-block .two-col #cert-exten{
+            overflow:hidden;
+            padding:0 0 0 17px;
+            margin:0;
+            list-style-type:square;
+        }
+        table {
+            border:solid;
+            border-collapse:collapse;
+            border-color:black;
+        }
+       th {
+        text-align:center;
+        background: #ccc;
+        padding: 5px;
+        border: 1px solid black;
+       }
+       td {
+        padding: 5px;
+        border: 1px solid black;
+       }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+    <p class="header-block">Origin Certificate</p2>
+    <div class="border-block">
+        <form>
+            <input type="radio" name="originformat" value="der" checked onClick="handleOriginCert()"><label>DER</label>
+            <input type="radio" name="originformat" value="pkcs12" onClick="handleOriginCert()"><label>PKCS#12</label>
+            <input type="radio" name="originformat" value="jks" onClick="handleOriginCert()"><label>JKS</label>
+        </form>
+
+        <hr />
+
+        <div id="origin-der">
+            <h3>DER format</h3>
+            <p>
+                <label for="ca-cert-file">Select der cert:</label>
+                <input type="file" id="ca-cert-file" title="CA certificate" onChange="handleUploadDerCert(this)">
+            </p>
+            <p>
+                <label for="ca-private-key-file">Select der privkey:</label>
+                <input type="file" id="ca-private-key-file" title="CA certificate" onChange="handleUploadDerPrivateKey(this)">
+            </p>
+        </div>
+
+        <div id="origin-pkcs12" style="display:none">
+            <h3>Upload CA certificate and privatekey</h3>
+            <p>
+                <label for="ca-cert-file">Select CA cert:</label>
+                <input type="file" id="ca-cert-file" title="CA certificate" onChange="handleFileCACert(this)">
+            </p>
+            <p>
+                <label for="ca-private-key-file">Select CA privkey:</label>
+                <input type="file" id="ca-private-key-file" title="CA certificate" onChange="handleFileCAPrivateKey(this)">
+            </p>
+        </div>
+
+
+        <div id="origin-jks" style="display:none">
+            <h3>Create new CA certificate</h3>
+            <section id="user-information">
+                <table>
+                    <tr>
+                        <td><label for="ca-common-name">Common Name:</label></td>
+                        <td><input type="text" id="ca-common-name"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-organization">Organization Name:</label></td>
+                        <td><input type="text" id="ca-organization"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-organization-unit">Organization Unit Name:</label></td>
+                        <td><input type="text" id="ca-organization-unit"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-country-code">Country Name:</label></td>
+                        <td><input type="text" id="ca-country-code" maxlength="2"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-state-name">State or Province Name:</label></td>
+                        <td><input type="text" id="ca-state-name"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="ca-locality-name">Locality Name:</label></td>
+                        <td><input type="text" id="ca-locality-name"/></td>
+                    </tr>
+                </table>
+                <a id="ca-create-certificate" style="margin:20px 0px 0px;" onClick="createCACert()">Create CA Certificate</a>
+            </section>
+
+            <section id="ca-certificate">
+                <h1>Certificate in PEM Format</h1>
+                <a id="ca-certificate-download" download="ca.cert">Download Certificate</a>
+                <a onClick="copyToClipboard('ca-cert-pem')">Copy</a>
+                <pre id="ca-cert-pem"></pre>
+            </section>
+
+            <section id="ca-private-key">
+                <h1>Private Key in PEM Format</h1>
+                <a id="ca-private-key-download" download="ca.key">Download Private Key</a>
+                <a onClick="copyToClipboard('ca-private-key-pem')">Copy</a>
+                <pre id="ca-private-key-pem"></pre>
+            </section>
+        </div>
+    </div>
+
+    <p class="header-block">Converted Certificate</p>
+    <div id="certificate-block" class="border-block">
+        <h1>Converted Certificate</h1>
+
+        <section id="certificate">
+            <h1>Certificate in PEM Format</h1>
+            <a id="certificate-download" download="certificate.pem">Download Certificate</a>
+            <a onClick="copyToClipboard('certificate-pem')">Copy</a>
+            <pre id="certificate-pem"></pre>
+        </section>
+
+        <section id="private-key">
+            <h1>Private Key in PEM Format</h1>
+            <a id="private-key-download" download="privatekey.pem">Download Private Key</a>
+            <a onClick="copyToClipboard('private-key-pem')">Copy</a>
+            <pre id="private-key-pem"></pre>
+        </section>
+    </div>
+</div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        "use strict";
+
+        // Fix Apple prefix if needed
+        if (window.crypto && !window.crypto.subtle && window.crypto.webkitSubtle) {
+            window.crypto.subtle = window.crypto.webkitSubtle;  // Won't work if subtle already exists
+        }
+
+        // Check that web crypto is even available
+        if (!window.crypto || !window.crypto.subtle) {
+            alert("Your browser does not support the Web Cryptography API! This page will not work.");
+            return;
+        }
+    });
+    </script>
+
+</body>
+</html>
