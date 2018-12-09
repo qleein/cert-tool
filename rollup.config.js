@@ -15,6 +15,7 @@ window.copyToClipboard = copyToClipboard;
 window.handleOriginCert = handleOriginCert;
 window.handleUploadDerCert = handleUploadDerCert;
 window.handleUploadDerPrivateKey = handleUploadDerPrivateKey;
+window.handleUploadPKCS12Cert = handleUploadPKCS12Cert;
 function context(name, func) {}`,
         plugins: [
             rollupNodeResolve({ jsnext: true, main: true })

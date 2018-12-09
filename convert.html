@@ -149,12 +149,14 @@
         <div id="origin-pkcs12" style="display:none">
             <h3>Upload CA certificate and privatekey</h3>
             <p>
-                <label for="ca-cert-file">Select CA cert:</label>
-                <input type="file" id="ca-cert-file" title="CA certificate" onChange="handleFileCACert(this)">
+                <tr>
+                    <label for="pkcs12-pass">password</label>
+                    <input type="text" id="pkcs12-password"/>
+                </tr>
             </p>
             <p>
-                <label for="ca-private-key-file">Select CA privkey:</label>
-                <input type="file" id="ca-private-key-file" title="CA certificate" onChange="handleFileCAPrivateKey(this)">
+                <label for="ca-cert-file">Select CA cert:</label>
+                <input type="file" id="ca-cert-file" title="CA certificate" onChange="handleUploadPKCS12Cert(this)">
             </p>
         </div>
 

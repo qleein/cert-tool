@@ -2,6 +2,7 @@ import * as asn1js from "asn1js";
 import Certificate from "pkijs/src/Certificate";
 import AttributeTypeAndValue from "pkijs/src/AttributeTypeAndValue";
 import Extension from "pkijs/src/Extension";
+import PFX from "pkijs/src/PFX";
 import RSAPublicKey from "pkijs/src/RSAPublicKey";
 import RSAPrivateKey from "pkijs/src/RSAPrivateKey";
 import CertificateChainValidationEngine from "pkijs/src/CertificateChainValidationEngine";
@@ -712,8 +713,8 @@ function handleOriginCert(evt) {
         if (radio[i].value == "der") {
             elem = document.getElementById("origin-der");
             elem.style.display = "block";
-        } else if (radio[i].value == "new"){
-            elem = document.getElementById("create-ca");
+        } else if (radio[i].value == "pkcs12"){
+            elem = document.getElementById("origin-pkcs12");
             elem.style.display = "block";
         } else {
             CACertificateInfo.type = "self-signed";
@@ -757,6 +758,91 @@ function handleUploadDerPrivateKey(input) {
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
+function parsePKCS12(buffer)
+{
+	return Promise.resolve().then(() => parsePKCS12Internal(buffer, document.getElementById("password").value)).then(pkcs12 =>
+	{
+		//region Initial variables
+		let result = "";
+		//endregion
+		
+		//region Store X.509 certificate value
+		const certificateBuffer = pkcs12.parsedValue.authenticatedSafe.parsedValue.safeContents[1].value.safeBags[0].bagValue.parsedValue.toSchema().toBER(false);
+		
+		result += "-----BEGIN CERTIFICATE-----\r\n";
+		result += formatPEM(toBase64(arrayBufferToString(certificateBuffer)));
+		result += "\r\n-----END CERTIFICATE-----\r\n";
+		//endregion
+		
+		//endregion Store PKCS#8 (private key) value
+		const pkcs8Buffer = pkcs12.parsedValue.authenticatedSafe.parsedValue.safeContents[0].value.safeBags[0].bagValue.parsedValue.toSchema().toBER(false);
+		
+		result += "\r\n-----BEGIN PRIVATE KEY-----\r\n";
+		result += formatPEM(toBase64(arrayBufferToString(pkcs8Buffer)));
+		result += "\r\n-----END PRIVATE KEY-----\r\n";
+		//endregion
+		
+		// noinspection InnerHTMLJS
+		document.getElementById("parsing_result").innerHTML = result;
+	});
+}
+function handleUploadPKCS12Cert(input) {
+    const tempReader = new FileReader();
+    const currentFiles = input.files;
+    tempReader.onload =
+        function(event)
+        {
+            var buf = event.target.result;
+            const asn1 = asn1js.fromBER(buf);
+            const pkcs12 = new PFX({schema: asn1.result});
+            console.log(pkcs12);
+            console.log("asn1:.result.authSafe: ", asn1);
+            console.log("buf: ", buf);
+            const passwordConverted = stringToArrayBuffer(document.getElementById("pkcs12-password").value);
+            let sequence = Promise.resolve();
+
+            sequence = sequence.then(
+                () => pkcs12.parseInternalValues({
+                    password: passwordConverted,
+                    checkIntegrity: true
+                })
+            );
+            sequence = sequence.then(()=> {
+                console.log("pkcs12: ", pkcs12.parsedValue);
+                pkcs12.parsedValue.authenticatedSafe.parseInternalValues({
+                    safeContents: [
+                        {
+                            password: passwordConverted
+                        },
+                        {
+                            password: passwordConverted
+                        }
+                    ]
+                })
+                console.log("pkcs12: ", pkcs12);
+            });
+            sequence = sequence.then(
+                () => pkcs12.parsedValue.authenticatedSafe.parsedValue.safeContents[0].value.safeBags[0].bagValue.parseInternalValues({
+                    password: passwordConverted
+                })
+            );
+
+            sequence = sequence.then(() => {
+                console.log(pkcs12);
+		        const certificateBuffer = pkcs12.parsedValue.authenticatedSafe.parsedValue.safeContents[1].value.safeBags[0].bagValue.parsedValue.toSchema().toBER(false);
+		        const pkcs8Buffer = pkcs12.parsedValue.authenticatedSafe.parsedValue.safeContents[0].value.safeBags[0].bagValue.parsedValue.toSchema().toBER(false);
+                var pemCert = convertBinaryToPem(certificateBuffer, "CERTIFICATE");
+                document.getElementById("certificate-pem").textContent = pemCert;
+                var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemCert);
+                document.getElementById("certificate-download").setAttribute("href", pemUrl);
+                var pemPrivateKey = convertBinaryToPem(pkcs8Buffer, "PRIVATE KEY");
+                document.getElementById("private-key-pem").textContent = pemPrivateKey;
+                var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPrivateKey);
+                document.getElementById("private-key-download").setAttribute("href", pemUrl);
+            });
+        };
+    tempReader.readAsArrayBuffer(currentFiles[0]);
+}
 
 
 context("Hack for Rollup.js", () =>
@@ -772,5 +858,6 @@ context("Hack for Rollup.js", () =>
     handleOriginCert();
     handleUploadDerCert();
     handleUploadDerPrivateKey();
+    handleUploadPKCS12Cert();
 });
 //*********************************************************************************
