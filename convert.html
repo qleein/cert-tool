@@ -5,6 +5,8 @@
     <title>X.509 Certificate Creater</title>
 
     <script src="bundle.js"></script>
+    <script src="wasm_exec.js"></script>
+    <script async type="text/javascript" src="pfx2pem.js"></script>
 
     <style type="text/css">
         body{background:#EFEFEF;font:normal 14px/16px Helvetica, Arial, sans-serif;}
@@ -147,7 +149,7 @@
         </div>
 
         <div id="origin-pkcs12" style="display:none">
-            <h3>Upload CA certificate and privatekey</h3>
+            <h3>PKCS12/PFX format</h3>
             <p>
                 <tr>
                     <label for="pkcs12-pass">password</label>
@@ -162,50 +164,17 @@
 
 
         <div id="origin-jks" style="display:none">
-            <h3>Create new CA certificate</h3>
-            <section id="user-information">
-                <table>
-                    <tr>
-                        <td><label for="ca-common-name">Common Name:</label></td>
-                        <td><input type="text" id="ca-common-name"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="ca-organization">Organization Name:</label></td>
-                        <td><input type="text" id="ca-organization"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="ca-organization-unit">Organization Unit Name:</label></td>
-                        <td><input type="text" id="ca-organization-unit"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="ca-country-code">Country Name:</label></td>
-                        <td><input type="text" id="ca-country-code" maxlength="2"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="ca-state-name">State or Province Name:</label></td>
-                        <td><input type="text" id="ca-state-name"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="ca-locality-name">Locality Name:</label></td>
-                        <td><input type="text" id="ca-locality-name"/></td>
-                    </tr>
-                </table>
-                <a id="ca-create-certificate" style="margin:20px 0px 0px;" onClick="createCACert()">Create CA Certificate</a>
-            </section>
-
-            <section id="ca-certificate">
-                <h1>Certificate in PEM Format</h1>
-                <a id="ca-certificate-download" download="ca.cert">Download Certificate</a>
-                <a onClick="copyToClipboard('ca-cert-pem')">Copy</a>
-                <pre id="ca-cert-pem"></pre>
-            </section>
-
-            <section id="ca-private-key">
-                <h1>Private Key in PEM Format</h1>
-                <a id="ca-private-key-download" download="ca.key">Download Private Key</a>
-                <a onClick="copyToClipboard('ca-private-key-pem')">Copy</a>
-                <pre id="ca-private-key-pem"></pre>
-            </section>
+            <h3>jks format</h3>
+            <p>
+                <tr>
+                    <label for="jks-pass">password</label>
+                    <input type="text" id="jks-password"/>
+                </tr>
+            </p>
+            <p>
+                <label for="ca-cert-file">Select Java Keystore File:</label>
+                <input type="file" id="ca-cert-file" title="CA certificate" onChange="handleUploadJKS(this)">
+            </p>
         </div>
     </div>
 

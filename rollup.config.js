@@ -16,6 +16,7 @@ window.handleOriginCert = handleOriginCert;
 window.handleUploadDerCert = handleUploadDerCert;
 window.handleUploadDerPrivateKey = handleUploadDerPrivateKey;
 window.handleUploadPKCS12Cert = handleUploadPKCS12Cert;
+window.handleUploadJKS = handleUploadJKS;
 function context(name, func) {}`,
         plugins: [
             rollupNodeResolve({ jsnext: true, main: true })
