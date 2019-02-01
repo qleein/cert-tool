@@ -786,11 +786,6 @@ function handleUploadPKCS12Cert(input) {
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
 
-window.rawJKS = "";
-window.JSKPassword = "";
-window.certFromJKS = "";
-window.privkeyFromJKS = "";
-
 function handleUploadJKS(input) {
     const tempReader = new FileReader();
     const currentFiles = input.files;
@@ -799,14 +794,12 @@ function handleUploadJKS(input) {
         {
             var dst = new Uint8Array(event.target.result);
             window.rawJKS = dst;
-            window.JKSPassword = document.getElementById("jks-password").value;
-
+            var passwd = document.getElementById("jks-password").value;
             const go = new Go();
 			WebAssembly.instantiateStreaming(fetch("jks2pem.wasm"), go.importObject).then((result) => {
 				go.run(result.instance);
             }).then(()=>{
-                document.getElementById("certificate-pem").textContent = window.certFromJKS;
-                document.getElementById("private-key-pem").textContent = window.privkeyFromJKS;
+                jks2pem(dst, passwd);
             });
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
