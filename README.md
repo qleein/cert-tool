@@ -21,10 +21,22 @@ $ emmake make
 
 3. build project
 
+clone project
+
 ```
 $ git clone https://github.com/qlees/cert-tool.git
+```
+
+build cert.wasm using Go
+
+```
 $ cd cert-tool
 $ GOOS=js GOARCH=wasm go build -o cert.wasm cert.go
+$ cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
+```
+
+build pfx2pem.wasm using Emscripten
+
 $ cd /path/to/emsdk
 $ source ./emsdk_env.sh
 $ emcc -o pfx2pem.js -I /path/to/openssl/include -L/path/to/openssl/ pfx2pem.c -O3 -s WASM=1 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" -lcrypto
@@ -42,8 +54,8 @@ Now webassembly must be loaded by fetch method, so a http server is needed;
 
 ## online demo
 
-Create certificate online, Click[ here ](https://tool.qlee.in/cert/create.html).
-Convert DER/PKCS12/PFX/JKS certificate to PEM format online, Click[ here ](https://tool.qlee.in/cert/convert.html).
+* Create certificate online, Click[ here ](https://tool.qlee.in/cert/create.html).
+* Convert DER/PKCS12/PFX/JKS certificate to PEM format online, Click[ here ](https://tool.qlee.in/cert/convert.html).
 
 ## Q&A
 
