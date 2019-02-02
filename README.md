@@ -1,35 +1,92 @@
-# create-cert
-A GUI tool to creating X.509 certificate, based on webcrypto in javascript.
+# cert-tool
+A GUI tool to operate X.509 certificate, based on webcrypto/webassembly.
 
-You can use it to create signed X.509 certificate by yourself.
 
 ## How To Use
 
 1. Dependence
 
-    * node6.0 or later
-    * npm
+    * Emscripten SDK: see the [official document](https://github.com/emscripten-core/emsdk)
+    * Go 1.11 or later: download [here](https://golang.org/doc/install)
 
-2. build project
+2. complie openssl by Emscripten
 
 ```
-   * git clone https://github.com/qlees/create-cert.git
-   * cd create-cert
-   * npm install
+$ cd /path/to/emsdk
+$ source ./emsdk_env.sh
+$ cd /path/to/openssl
+$ emconfigure ./config no-asm no-shared no-threads no-zlib
+$ emmake make
 ```
 
-3. open in webbroswer
+3. build project
 
-   open create-cert.html throuh web broswer
+```
+$ git clone https://github.com/qlees/cert-tool.git
+$ cd cert-tool
+$ GOOS=js GOARCH=wasm go build -o cert.wasm cert.go
+$ cd /path/to/emsdk
+$ source ./emsdk_env.sh
+$ emcc -o pfx2pem.js -I /path/to/openssl/include -L/path/to/openssl/ pfx2pem.c -O3 -s WASM=1 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" -lcrypto
+```
+
+4. start a http server
+
+If using python
+
+Now webassembly must be loaded by fetch method, so a http server is needed; 
+
+* add wasm to mime types: `echo "application/wasm wasm" >> /usr/local/etc/mime.types`
+* start httpserver: `python -m SimpleHTTPServer` or `python3 -m http.server`.
 
 
 ## online demo
 
-Create certificate online, Click[ here ](https://tool.qlee.in/create-cert.html).
+Create certificate online, Click[ here ](https://tool.qlee.in/cert/create.html).
+Convert DER/PKCS12/PFX/JKS certificate to PEM format online, Click[ here ](https://tool.qlee.in/cert/convert.html).
 
+## Q&A
 
-## option
+#### compile openssl failed, error: stdatomic.h not found
 
-* create a self-signed certificate.
-* upload CA certificate and privatekey.
-* create a new CA certificate.
+this patch would resolve it
+
+```
+diff --git a/include/internal/refcount.h b/include/internal/refcount.h
+index 75d70a6418..3bda6bcbec 100644
+--- a/include/internal/refcount.h
++++ b/include/internal/refcount.h
+@@ -17,7 +17,7 @@
+ # endif
+ 
+ # if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L \
+-     && !defined(__STDC_NO_ATOMICS__)
++     && !defined(__STDC_NO_ATOMICS__) && !defined(__EMSCRIPTEN__)
+ #  include <stdatomic.h>
+ #  define HAVE_C11_ATOMICS
+ # endif
+diff --git a/include/internal/tsan_assist.h b/include/internal/tsan_assist.h
+index f30ffe398a..cc72f9b3a2 100644
+--- a/include/internal/tsan_assist.h
++++ b/include/internal/tsan_assist.h
+@@ -48,7 +48,7 @@
+  */
+ 
+ #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L \
+-    && !defined(__STDC_NO_ATOMICS__)
++    && !defined(__STDC_NO_ATOMICS__) && !defined(__EMSCRIPTEN__)
+ # include <stdatomic.h>
+ 
+ # if defined(ATOMIC_POINTER_LOCK_FREE) \
+```
+
+#### compile openssl failed, error: /path/to/emcc not found
+
+check the emcc path `which emcc`, maybe you should modify the variable $CROSS_COMPILE in Makefile, make sure the $CC and $CXX path is correct.
+
+#### Uncaught (in promise) TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'
+
+you should add `application/wasm` to httpserver's mine.types
+
+* if using python, `echo "application/wasm wasm >> /usr/local/etc/mime.types`
+* if using Nginx, add `application/wasm wasm` to /path/to/nginx/conf/mime.types
