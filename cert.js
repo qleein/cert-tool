@@ -1,19 +1,3 @@
-import * as asn1js from "asn1js";
-import Certificate from "pkijs/src/Certificate";
-import AttributeTypeAndValue from "pkijs/src/AttributeTypeAndValue";
-import Extension from "pkijs/src/Extension";
-import RSAPublicKey from "pkijs/src/RSAPublicKey";
-import RSAPrivateKey from "pkijs/src/RSAPrivateKey";
-import CertificateChainValidationEngine from "pkijs/src/CertificateChainValidationEngine";
-import CertificateRevocationList from "pkijs/src/CertificateRevocationList";
-import { stringToArrayBuffer, bufferToHexCodes } from "pvutils";
-import { getCrypto, getAlgorithmParameters, setEngine } from "pkijs/src/common";
-import BasicConstraints from "pkijs/src/BasicConstraints";
-
-import GeneralName from "pkijs/src/GeneralName";
-import GeneralNames from "pkijs/src/GeneralNames";
-//*********************************************************************************
-
 let certificateBuffer = new ArrayBuffer(0); // ArrayBuffer with loaded or created CERT
 let privateKeyBuffer = new ArrayBuffer(0);
 let hashAlg = "SHA-256";
@@ -29,7 +13,7 @@ let CACertificateInfo = {
 function checkCACertificate() {
     var ty = CACertificateInfo.type;
     if (ty == "self-signed") {
-        return true;
+        return false;
     }
 
     if (ty == "upload") {
@@ -37,7 +21,10 @@ function checkCACertificate() {
     }
 
     if (ty == "created") {
-        return CACertificateInfo.created;
+        return {
+            cert:document.getElementById("ca-cert-pem").textContent,
+            pkey:document.getElementById("ca-private-key-pem").textContent,
+        };
     }
 
     return false;
@@ -103,30 +90,11 @@ function handleFileCACert(input) {
     tempReader.onload =
         function(event)
         {
-            var buf = pemToDer(event.target.result, "certificate");
-            const asn1 = asn1js.fromBER(buf);
-            const certificate = new Certificate({schema: asn1.result});
-            //const certificate = new org.pkijs.simpl.CERT({schema:asn1.result});
-            //document.write(JSON.stringify(certificate.subject.toJSON()));
-            /*
-            var names = extract_entity(certificate.subject);
-            var text = "";
-            text = text + "Common Name: " + names["commonName"] + "\n";
-                text = text + "Organization Name: " + names["organizationName"] + "\n";
-            text = text + "Organizational Unit Name: " + names["organizationUnitName"] + "\n";
-            text = text + "Country Name: " + names["countryCode"] + "\n";
-            text = text + "State or Province Name: " + names["stateOrProvinceName"] + "\n";
-            text = text + "Locality Name : " + names["localityName"] + "\n";
-            document.getElementById("ca-cert-pem").textContent = text;
-            //document.write(JSON.stringify(subj));
-            */
-            CACertificateInfo.upload.cert = certificate;
-            CACertificateInfo.upload.subject = certificate.subject;
+            var buf = new Uint8Array(event.target.result);
+            CACertificateInfo.upload.cert = buf;
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
-
-
 
 function handleFileCAPrivateKey(input) {
     const tempReader = new FileReader();
@@ -135,170 +103,11 @@ function handleFileCAPrivateKey(input) {
     tempReader.onload =
         function(event)
         {
-            var buf = pemToDer(event.target.result, "privatekey");
-            const asn1 = asn1js.fromBER(buf);
-            //const privatekey = new org.pkijs.simpl.PKCS8({schema:asn1.result});
-            //const privatekey = new org.pkijs.simpl.x509.RSAPrivateKey({schema:asn1.result});
-            //const privatekey = window.crypto.subtle.importKey("raw", buf, "RSASSA-PKCS1-v1_5", true, ["sign"]);
-            window.crypto.subtle.importKey(
-                "pkcs8",
-                buf,
-                { name: "RSASSA-PKCS1-v1_5",
-                  hash: {name:"SHA-256"}
-                },
-                true,
-                ["sign"]
-            ).
-            then(function(privatekey) {
-                CACertificateInfo.upload.privateKey = privatekey;
-                window.crypto.subtle.exportKey('pkcs8', privatekey).
-                then(function(spki) {
-                    var pemPublicKey = convertBinaryToPem(spki, "PRIVATE KEY");
-                    var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPublicKey);
-                    //document.getElementById("ca-private-key-pem").textContent = pemPublicKey;
-                    //document.getElementById("ca-private-key-download").setAttribute("href", pemUrl);
-                })
-            }) .
-            catch(function(err) {
-                console.log("Error parse privatekey: " + err.message);
-            });
-
+            var buf = new Uint8Array(event.target.result);
+            CACertificateInfo.upload.pkey = buf;
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
-
-function setEntity(entity, names) {
-    if (names["commonName"]) {
-       entity.typesAndValues.push(new AttributeTypeAndValue({
-            type: "2.5.4.3",
-            value: new asn1js.Utf8String({value: names["commonName"]})
-        }));
-    }
-    if (names["countryCode"]) {
-       entity.typesAndValues.push(new AttributeTypeAndValue({
-            type: "2.5.4.6",
-            value: new asn1js.PrintableString({value: names["countryCode"]})
-        }));
-    }
-    if (names["stateOrProvinceName"]) {
-       entity.typesAndValues.push(new AttributeTypeAndValue({
-            type: "2.5.4.8",
-            value: new asn1js.Utf8String({value: names["stateOrProvinceName"]})
-        }));
-    }
-    if (names["localityName"]) {
-       entity.typesAndValues.push(new AttributeTypeAndValue({
-            type: "2.5.4.7",
-            value: new asn1js.Utf8String({value: names["localityName"]})
-        }));
-    }
-    if (names["organizationName"]) {
-       entity.typesAndValues.push(new AttributeTypeAndValue({
-            type: "2.5.4.10",
-            value: new asn1js.Utf8String({value: names["organizationName"]})
-        }));
-    }
-    if (names["organizationUnitName"]) {
-       entity.typesAndValues.push(new AttributeTypeAndValue({
-            type: "2.5.4.11",
-            value: new asn1js.Utf8String({value: names["organizationUnitName"]})
-        }));
-    }
-}
-
-function formatPEM(pemString)
-{
-	/// <summary>Format string in order to have each line with length equal to 63</summary>
-	/// <param name="pemString" type="String">String to format</param>
-
-	const stringLength = pemString.length;
-	let resultString = "";
-
-	for(let i = 0, count = 0; i < stringLength; i++, count++)
-	{
-		if(count > 63)
-		{
-			resultString = `${resultString}\r\n`;
-			count = 0;
-		}
-
-		resultString = `${resultString}${pemString[i]}`;
-	}
-
-	return resultString;
-}
-
-function createCertificateFinal(certificate, issuerPrivateKey, signAlg, hashAlg) {
-
-	let publicKey;
-	let privateKey;
-    let signPrivateKey;
-
-    const crypto = getCrypto();
-    if (typeof crypto === "undefined")
-        return Promise.reject("No WebCrypto extension found");
-    //endregion
-
-    let sequence = Promise.resolve();
-	//region Create a new key pair
-	sequence = sequence.then(() =>
-	{
-		//region Get default algorithm parameters for key generation
-		const algorithm = getAlgorithmParameters(signAlg, "generatekey");
-		if("hash" in algorithm.algorithm)
-			algorithm.algorithm.hash.name = hashAlg;
-		//endregion
-
-		return crypto.generateKey(algorithm.algorithm, true, algorithm.usages);
-	});
-	//endregion
-
-	//region Store new key in an interim variables
-	sequence = sequence.then(keyPair =>
-	{
-		publicKey = keyPair.publicKey;
-		privateKey = keyPair.privateKey;
-	}, error => Promise.reject(`Error during key generation: ${error}`));
-	//endregion
-
-	//region Exporting public key into "subjectPublicKeyInfo" value of certificate
-	sequence = sequence.then(() =>
-		certificate.subjectPublicKeyInfo.importKey(publicKey)
-	);
-	//endregion
-
-	//region Signing final certificate
-	sequence = sequence.then(() =>
-    {
-        signPrivateKey = issuerPrivateKey || privateKey;
-		return certificate.sign(signPrivateKey, hashAlg)
-    }, error => Promise.reject(`Error during exporting public key: ${error}`));
-	//endregion
-
-	//region Encode and store certificate
-	sequence = sequence.then(() =>
-	{
-		//trustedCertificates.push(certificate);
-		certificateBuffer = certificate.toSchema(true).toBER(false);
-	}, error => Promise.reject(`Error during signing: ${error}`));
-	//endregion
-
-    sequence = sequence.then(() =>
-        crypto.exportKey("pkcs8", privateKey)
-    );
-
-    sequence = sequence.then(result =>
-    {
-        privateKeyBuffer = result;
-        return {
-            certificate: certificate,
-            privateKey: privateKey
-        };
-    }, error => Promise.reject(`Error during exporting of private key: ${error}`));
-
-    return sequence;
-}
-
 
 function createCACert()
 {
@@ -320,6 +129,37 @@ function createCACert()
         organizationUnitName: organizationUnit,
     }
 
+    var certinfo = {
+        subject: names,
+    }
+
+    let sequence = Promise.resolve();
+    sequence = sequence.then(() => {
+
+        return crypto.subtle.generateKey(
+            {
+                name: "RSASSA-PKCS1-v1_5",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: "SHA-256",
+            },
+            true,
+            ["sign", "verify"]
+        );
+    });
+
+    sequence = sequence.then(keypair=> {
+        return crypto.subtle.exportKey("pkcs8", keypair.privateKey);
+    })
+
+    sequence = sequence.then(pkcs8=>{
+        console.log(pkcs8);
+        var buf = new Uint8Array(pkcs8);
+        console.log("called");
+        wasmCreateCACertificate(buf, certinfo);       
+    });
+
+/*
     const certificate = new Certificate();
 
 	certificate.version = 2;
@@ -361,6 +201,7 @@ function createCACert()
             document.getElementById("ca-private-key-download").setAttribute("href", pemUrl);
         });
     });
+*/
 }
 
 
@@ -393,6 +234,42 @@ function createCert() {
         organizationUnitName: organizationUnit,
     }
 
+    var certinfo = {
+        subject: names,
+        isCA: false,
+    };
+
+    var ca = checkCACertificate();
+
+    let sequence = Promise.resolve();
+    sequence = sequence.then(() => {
+
+        return crypto.subtle.generateKey(
+            {
+                name: "RSASSA-PKCS1-v1_5",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: "SHA-256",
+            },
+            true,
+            ["sign", "verify"]
+        );
+    });
+
+    sequence = sequence.then(keypair=> {
+        return crypto.subtle.exportKey("pkcs8", keypair.privateKey);
+    })
+    console.log(window);
+    sequence = sequence.then(pkcs8=>{
+        var buf = new Uint8Array(pkcs8);
+        if (typeof ca == "object") {
+            wasmCreateCertificate(buf, certinfo, ca);
+        } else {
+            wasmCreateCertificate(buf, certinfo);
+        }
+    });
+
+/*
     var CACert = checkCACertificate();
     if (!CACert) {
         console.log("Not ca certificate defined");
@@ -448,7 +325,7 @@ function createCert() {
             document.getElementById("private-key-download").setAttribute("href", pemUrl);
         });
     });
-
+*/
 }
 
 
@@ -728,14 +605,8 @@ function handleUploadDerCert(input) {
     tempReader.onload =
         function(event)
         {
-            var buf = event.target.result;
-            const asn1 = asn1js.fromBER(buf);
-            const certificate = new Certificate({schema: asn1.result});
-            uploadCache["cert"] = certificate;
-            var pemCert = convertBinaryToPem(certificate.toSchema(true).toBER(false), "CERTIFICATE");
-            document.getElementById("certificate-pem").textContent = pemCert;
-            var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemCert);
-            document.getElementById("certificate-download").setAttribute("href", pemUrl);
+            var buf = new Uint8Array(event.target.result);
+            wasmDer2Pem(buf, "cert");
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
@@ -746,14 +617,8 @@ function handleUploadDerPrivateKey(input) {
     tempReader.onload =
         function(event)
         {
-            var buf = event.target.result;
-            const asn1 = asn1js.fromBER(buf);
-            const certificate = new RSAPrivateKey({schema: asn1.result});
-
-            var pemPrivateKey = convertBinaryToPem(certificate.toSchema(true).toBER(false), "PRIVATE KEY");
-            document.getElementById("private-key-pem").textContent = pemPrivateKey;
-            var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPrivateKey);
-            document.getElementById("private-key-download").setAttribute("href", pemUrl);
+            var buf = new Uint8Array(event.target.result);
+            wasmDer2Pem(buf, "pkey");
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
@@ -804,22 +669,3 @@ function handleUploadJKS(input) {
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
-
-
-context("Hack for Rollup.js", () =>
-{
-	return;
-
-    handleWhereIsCA();
-    handleFileCACert();
-    handleFileCAPrivateKey();
-    createCACert();
-    createCert();
-    copyToClipboard();
-    handleOriginCert();
-    handleUploadDerCert();
-    handleUploadDerPrivateKey();
-    handleUploadPKCS12Cert();
-    handleUploadJKS();
-});
-//*********************************************************************************

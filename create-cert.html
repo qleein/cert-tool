@@ -4,8 +4,14 @@
     <meta charset="utf-8">
     <title>X.509 Certificate Creater</title>
 
-    <script src="bundle.js"></script>
+    <script src="cert.js"></script>
     <script src="wasm_exec.js"></script>
+    <script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("jks2pem.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+    })
+    </script>
 
     <style type="text/css">
         body{background:#EFEFEF;font:normal 14px/16px Helvetica, Arial, sans-serif;}
