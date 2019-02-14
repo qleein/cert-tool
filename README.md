@@ -37,6 +37,7 @@ $ cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
 
 build pfx2pem.wasm using Emscripten
 
+```
 $ cd /path/to/emsdk
 $ source ./emsdk_env.sh
 $ emcc -o pfx2pem.js -I /path/to/openssl/include -L/path/to/openssl/ pfx2pem.c -O3 -s WASM=1 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" -lcrypto
@@ -59,7 +60,7 @@ Now webassembly must be loaded by fetch method, so a http server is needed;
 
 ## Q&A
 
-#### compile openssl failed, error: stdatomic.h not found
+### 1. compile openssl failed, error: stdatomic.h not found
 
 this patch would resolve it
 
@@ -92,11 +93,11 @@ index f30ffe398a..cc72f9b3a2 100644
  # if defined(ATOMIC_POINTER_LOCK_FREE) \
 ```
 
-#### compile openssl failed, error: /path/to/emcc not found
+### 2. compile openssl failed, error: /path/to/emcc not found
 
 check the emcc path `which emcc`, maybe you should modify the variable $CROSS_COMPILE in Makefile, make sure the $CC and $CXX path is correct.
 
-#### Uncaught (in promise) TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'
+### 3. Uncaught (in promise) TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'
 
 you should add `application/wasm` to httpserver's mine.types
 
