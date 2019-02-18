@@ -109,6 +109,16 @@ function handleFileCAPrivateKey(input) {
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
 
+function setCACertContent(cert, pkey) {
+    document.getElementById("ca-cert-pem").textContent = cert;
+    var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(cert);
+    document.getElementById("ca-certificate-download").setAttribute("href", pemUrl);
+
+    document.getElementById("ca-private-key-pem").textContent = pkey;
+    var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pkey);
+    document.getElementById("ca-private-key-download").setAttribute("href", pemUrl);
+}
+
 function createCACert()
 {
     var commonName        = document.getElementById("ca-common-name").value;
@@ -156,7 +166,7 @@ function createCACert()
         console.log(pkcs8);
         var buf = new Uint8Array(pkcs8);
         console.log("called");
-        wasmCreateCACertificate(buf, certinfo);       
+        wasmCreateCACertificate(buf, certinfo, setCACertContent);       
     });
 
 /*
@@ -213,6 +223,16 @@ function getSubjectAltNames() {
     return strs;
 }
 
+function setCertContent(cert, pkey) {
+    document.getElementById("certificate-pem").textContent = cert;
+    var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(cert);
+    document.getElementById("certificate-download").setAttribute("href", pemUrl);
+
+    document.getElementById("private-key-pem").textContent = pkey;
+    var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pkey);
+    document.getElementById("private-key-download").setAttribute("href", pemUrl);
+}
+
 function createCert() {
     var commonName       = document.getElementById("common-name").value;
     var organization     = document.getElementById("organization").value;
@@ -263,9 +283,9 @@ function createCert() {
     sequence = sequence.then(pkcs8=>{
         var buf = new Uint8Array(pkcs8);
         if (typeof ca == "object") {
-            wasmCreateCertificate(buf, certinfo, ca);
+            wasmCreateCertificate(buf, certinfo, ca, setCertContent);
         } else {
-            wasmCreateCertificate(buf, certinfo);
+            wasmCreateCertificate(buf, certinfo, undefined, setCertContent);
         }
     });
 
@@ -599,6 +619,20 @@ function handleOriginCert(evt) {
     }
 }
 
+function setPEMContent(cert, pkey) {
+    if (typeof cert != "undefined") {
+        pemCertUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(cert)
+        document.getElementById("certificate-pem").textContent = cert
+        document.getElementById("certificate-download").setAttribute("href", pemCertUrl)
+    }
+
+    if (typeof pkey != "undefined") {
+        pemPkeyUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pkey)
+        document.getElementById("private-key-pem").textContent = pkey
+        document.getElementById("private-key-download").setAttribute("href", pemPkeyUrl)
+    }
+}
+
 function handleUploadDerCert(input) {
     const tempReader = new FileReader();
     const currentFiles = input.files;
@@ -606,7 +640,7 @@ function handleUploadDerCert(input) {
         function(event)
         {
             var buf = new Uint8Array(event.target.result);
-            wasmDer2Pem(buf, "cert");
+            wasmDer2Pem(buf, "cert", setPEMContent);
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
@@ -618,7 +652,7 @@ function handleUploadDerPrivateKey(input) {
         function(event)
         {
             var buf = new Uint8Array(event.target.result);
-            wasmDer2Pem(buf, "pkey");
+            wasmDer2Pem(buf, "pkey", setPEMContent);
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
@@ -639,8 +673,9 @@ function handleUploadPKCS12Cert(input) {
             Module.HEAPU8.set(dst, buf);
             var result = Module.ccall('pkcs122pem', 'number', ['number', 'number', 'string', 'number', 'number'], [buf, dst.length, password, certbuf, pkeybuf]);
             if (result == 0) {
-                document.getElementById("certificate-pem").textContent = Pointer_stringify(certbuf);
-                document.getElementById("private-key-pem").textContent = Pointer_stringify(pkeybuf);
+                cert = Pointer_stringify(certbuf);
+                pkey = Pointer_stringify(pkeybuf);
+                setPEMContent(cert, pkey);
             } else {
                 console.log("failed");
             }
@@ -658,14 +693,8 @@ function handleUploadJKS(input) {
         function(event)
         {
             var dst = new Uint8Array(event.target.result);
-            window.rawJKS = dst;
             var passwd = document.getElementById("jks-password").value;
-            const go = new Go();
-			WebAssembly.instantiateStreaming(fetch("jks2pem.wasm"), go.importObject).then((result) => {
-				go.run(result.instance);
-            }).then(()=>{
-                jks2pem(dst, passwd);
-            });
+            jks2pem(dst, passwd, setPEMContent);
         };
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }

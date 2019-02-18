@@ -6,7 +6,6 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
     "encoding/pem"
-    "encoding/base64"
     "syscall/js"
     "crypto/rsa"
     "crypto/rand"
@@ -34,20 +33,14 @@ func der2pem(args []js.Value) {
             Bytes: buf,
         }
         pemCert := pem.EncodeToMemory(b)
-        pemCertString := base64.StdEncoding.EncodeToString([]byte(pemCert))
-        pemCertUrl := "data:application/octet-stream;charset=UTF-8;base64," + pemCertString
-        js.Global().Get("document").Call("getElementById", "certificate-pem").Set("textContent", string(pemCert))
-        js.Global().Get("document").Call("getElementById", "certificate-download").Call("setAttribute", "href", pemCertUrl);   
-    } else if ty == "pkey" {
+        args[2].Invoke(string(pemCert))
+     } else if ty == "pkey" {
         b := &pem.Block{
             Type: "PRIVATE KEY",
             Bytes: buf,
         }
         pemPkey := pem.EncodeToMemory(b)
-        pemPkeyString := base64.StdEncoding.EncodeToString([]byte(pemPkey))
-        pemPkeyUrl := "data:application/octet-stream;charset=UTF-8;base64," + pemPkeyString
-        js.Global().Get("document").Call("getElementById", "private-key-pem").Set("textContent", string(pemPkey))
-        js.Global().Get("document").Call("getElementById", "private-key-download").Call("setAttribute", "href", pemPkeyUrl);         
+        args[2].Invoke(js.Undefined(), string(pemPkey))
     }
 }
 
@@ -90,8 +83,7 @@ func jks2pem(args []js.Value) {
                 Bytes: val.PrivKey,
             }
             pkey := string(pem.EncodeToMemory(block))
-            js.Global().Get("document").Call("getElementById", "certificate-pem").Set("textContent", certchain)
-            js.Global().Get("document").Call("getElementById", "private-key-pem").Set("textContent", pkey)
+            args[2].Invoke(certchain, pkey)
             return
         }else {
             log.Fatal("unsupported keystore entry")
@@ -164,7 +156,7 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
 
     cacert := template
     capriv := priv
-    if len(args) >= 3 {
+    if len(args) >= 3 && args[2] != js.Undefined() {
         cainfo := args[2]
         pemCACert := cainfo.Get("cert").String()
         pemCAPkey := cainfo.Get("pkey").String()
@@ -193,36 +185,30 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
 }
 
 func createCACertificate(args []js.Value) {
-    derCert, derPriv := newCert(args)
+    n := len(args)
+    if n != 3 {
+        log.Fatal("invalid arguments")
+    }
 
+    derCert, derPriv := newCert(args[0:2])
     pemCert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derCert})
-    pemCertString := base64.StdEncoding.EncodeToString([]byte(pemCert))
-    pemCertUrl := "data:application/octet-stream;charset=UTF-8;base64," + pemCertString
-    js.Global().Get("document").Call("getElementById", "ca-cert-pem").Set("textContent", string(pemCert))
-    js.Global().Get("document").Call("getElementById", "ca-certificate-download").Call("setAttribute", "href", pemCertUrl);
-
     pemPkey := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes:derPriv})
-    pemPkeyString := base64.StdEncoding.EncodeToString([]byte(pemPkey))
-    pemPkeyUrl := "data:application/octet-stream;charset=UTF-8;base64," + pemPkeyString
-    js.Global().Get("document").Call("getElementById", "ca-private-key-pem").Set("textContent", string(pemPkey))
-    js.Global().Get("document").Call("getElementById", "ca-private-key-download").Call("setAttribute", "href", pemPkeyUrl)
-
+    args[2].Invoke(string(pemCert), string(pemPkey))
+    return
 }
 
 func createCertificate(args[] js.Value) {
-    derCert, derPriv := newCert(args)
+    n := len(args)
+    if n != 4 {
+        log.Fatal("invalid arguments")
+    }
 
+    cb := args[n-1]
+    derCert, derPriv := newCert(args[0:n-1])
     pemCert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derCert})
-    pemCertString := base64.StdEncoding.EncodeToString([]byte(pemCert))
-    pemCertUrl := "data:application/octet-stream;charset=UTF-8;base64," + pemCertString
-    js.Global().Get("document").Call("getElementById", "certificate-pem").Set("textContent", string(pemCert))
-    js.Global().Get("document").Call("getElementById", "certificate-download").Call("setAttribute", "href", pemCertUrl);
-
     pemPkey := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes:derPriv})
-    pemPkeyString := base64.StdEncoding.EncodeToString([]byte(pemPkey))
-    pemPkeyUrl := "data:application/octet-stream;charset=UTF-8;base64," + pemPkeyString
-    js.Global().Get("document").Call("getElementById", "private-key-pem").Set("textContent", string(pemPkey))
-    js.Global().Get("document").Call("getElementById", "private-key-download").Call("setAttribute", "href", pemPkeyUrl)
+    cb.Invoke(string(pemCert), string(pemPkey))
+    return
 }
 
 
