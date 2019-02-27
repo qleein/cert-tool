@@ -103,6 +103,18 @@ function handleFileCAPrivateKey(input) {
     tempReader.readAsArrayBuffer(currentFiles[0]);
 }
 
+function fmt(num, length) {
+    var r = num.toString();
+    if (r.length<length) r = Array(length - r.length + 1).join('0') + r;
+    return r;
+}
+function time2str(t) {
+    var s = fmt(t.getFullYear(), 4) + "-" + fmt(t.getMonth()+1, 2) + "-" + fmt(t.getDate(), 2);
+    s = s + " " + fmt(t.getHours(), 2) + ":" + fmt(t.getMinutes(), 2) + ":" + fmt(t.getSeconds(), 2);
+    return s;
+}
+
+
 function setCACertContent(cert, pkey) {
     document.getElementById("ca-cert-pem").textContent = cert;
     var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(cert);
@@ -208,6 +220,19 @@ function createCert() {
         subject: names,
         isCA: false,
     };
+
+    var startTime = document.getElementById("validity-not-before").value;
+    var endTime = document.getElementById("validity-not-after").value;
+    if (startTime != "") {
+        t = new Date(startTime);
+        t.setMinutes(t.getMinutes() + t.getTimezoneOffset());
+        certinfo["not before"] = time2str(t);
+    }
+    if (endTime != "") {
+        t = new Date(endTime);
+        t.setMinutes(t.getMinutes() + t.getTimezoneOffset());
+        certinfo["not after"] = time2str(t);
+    }
 
     var ca = checkCACertificate();
 

@@ -5,6 +5,15 @@
     <title>X.509 Certificate Creater</title>
 
     <script src="cert.js"></script>
+    <script type="text/javascript">
+        window.onload= function (){
+            var stime = new Date();
+            var etime = new Date();
+            etime.setYear(stime.getFullYear() + 1);
+            document.getElementById('validity-not-before').value = time2str(stime);
+            document.getElementById('validity-not-after').value = time2str(etime);
+        }
+    </script>
     <script src="wasm_exec.js"></script>
     <script>
     const go = new Go();
@@ -241,6 +250,18 @@
                     <td><input type="text" id="subject-alt-name"/></td>
                 </tr>
             </table>
+            <h2><br/>Validity</h2>
+            <table>
+                <tr>
+                    <td><label for="validity-not-before">Not Before:</label></td>
+                    <td><input type="datetime" id="validity-not-before"/></td>
+                </tr>
+                <tr>
+                    <td><label for="validity-not-after">Not After:</label></td>
+                    <td><input type="datetime" id="validity-not-after"/></td>
+                </tr>
+            </table>
+
             <a id="create-certificate" style="margin:20px 0px 0px" onClick="createCert()">Create Certificate</button></a>
         </section>
 

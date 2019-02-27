@@ -62,7 +62,7 @@ func jks2pem(args []js.Value) {
     for _, v := range ks {
         val, ok := v.(*keystore.PrivateKeyEntry)
         if ok {
-            
+ 
             certchain := ""
             for _, cert := range val.CertChain {
                 _,  err := x509.ParseCertificate(cert.Content)
@@ -94,7 +94,6 @@ func jks2pem(args []js.Value) {
 }
 
 func newCert(args[] js.Value) (derCert, derPriv []byte){
-    log.Println("len: ", len(args))
     jsPKey := args[0]
     buf := make([]byte, jsPKey.Length())
     for i := 0; i < jsPKey.Length(); i++ {
@@ -138,6 +137,19 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
     if certinfo.Get("expiryDate") != js.Undefined() {
         days = certinfo.Get("expiryData").Int()
     }
+    stime := time.Now()
+    etime := time.Now().AddDate(0, 0, days)
+    timefmt := "2006-01-02 15:04:05"
+    if certinfo.Get("not before") != js.Undefined() {
+        if stime, err = time.Parse(timefmt,certinfo.Get("not before").String()); err != nil {
+            log.Fatal(err)
+        }
+    }
+    if certinfo.Get("not after") != js.Undefined() {
+        if etime, err = time.Parse(timefmt, certinfo.Get("not after").String()); err != nil {
+            log.Fatal(err)
+        }
+    }
 
     isCA := false
     if certinfo.Get("isCA") != js.Undefined() {
@@ -147,8 +159,8 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
     template := &x509.Certificate{
         SerialNumber: big.NewInt(time.Now().Unix()),
         Subject: names,
-        NotBefore: time.Now(),
-        NotAfter: time.Now().AddDate(0, 0, days),
+        NotBefore: stime,
+        NotAfter: etime,
         KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
         BasicConstraintsValid: true,
         IsCA: isCA,
