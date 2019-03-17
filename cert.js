@@ -147,6 +147,7 @@ function createCACert()
 
     var certinfo = {
         subject: names,
+        isCA: true,
     }
 
     let sequence = Promise.resolve();
@@ -232,6 +233,14 @@ function createCert() {
         t = new Date(endTime);
         t.setMinutes(t.getMinutes() + t.getTimezoneOffset());
         certinfo["not after"] = time2str(t);
+    }
+
+
+    var elem = document.getElementById("subject-alt-name");
+    var str = elem.value.toLowerCase();
+    var strs = str.split(/[ ,]+/);
+    if (strs) {
+        certinfo["subject-alt-name"] = strs
     }
 
     var ca = checkCACertificate();

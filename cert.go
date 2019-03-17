@@ -11,6 +11,7 @@ import (
     "crypto/rand"
     "math/big"
     "time"
+    "net"
 
     "github.com/pavel-v-chernykh/keystore-go"
 )
@@ -187,7 +188,18 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
         capriv = pkeyinterface.(*rsa.PrivateKey)
     }
 
-    template.DNSNames = append(template.DNSNames, "test.org")
+    altnames := certinfo.Get("subject-alt-name")
+    if altnames != js.Undefined() {
+        for i := 0; i < altnames.Length(); i++ {
+            v := altnames.Index(i).String()
+            if net.ParseIP(v) != nil {
+                template.IPAddresses = append(template.IPAddresses, net.ParseIP(v))
+            } else {
+                template.DNSNames = append(template.DNSNames, v)
+            }
+        }
+    }
+
     derBytes, err := x509.CreateCertificate(rand.Reader, template, cacert, &priv.PublicKey, capriv)
     if err != nil {
         log.Fatal(err)
