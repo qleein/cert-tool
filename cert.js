@@ -84,10 +84,9 @@ function handleFileCACert(input) {
     tempReader.onload =
         function(event)
         {
-            var buf = new Uint8Array(event.target.result);
-            CACertificateInfo.upload.cert = buf;
+            CACertificateInfo.upload.cert = event.target.result;
         };
-    tempReader.readAsArrayBuffer(currentFiles[0]);
+    tempReader.readAsText(currentFiles[0]);
 }
 
 function handleFileCAPrivateKey(input) {
@@ -97,10 +96,9 @@ function handleFileCAPrivateKey(input) {
     tempReader.onload =
         function(event)
         {
-            var buf = new Uint8Array(event.target.result);
-            CACertificateInfo.upload.pkey = buf;
+            CACertificateInfo.upload.pkey = event.target.result;
         };
-    tempReader.readAsArrayBuffer(currentFiles[0]);
+    tempReader.readAsText(currentFiles[0]);
 }
 
 function fmt(num, length) {
@@ -170,9 +168,7 @@ function createCACert()
     })
 
     sequence = sequence.then(pkcs8=>{
-        console.log(pkcs8);
         var buf = new Uint8Array(pkcs8);
-        console.log("called");
         wasmCreateCACertificate(buf, certinfo, setCACertContent);       
     });
 }
@@ -263,7 +259,6 @@ function createCert() {
     sequence = sequence.then(keypair=> {
         return crypto.subtle.exportKey("pkcs8", keypair.privateKey);
     })
-    console.log(window);
     sequence = sequence.then(pkcs8=>{
         var buf = new Uint8Array(pkcs8);
         if (typeof ca == "object") {
