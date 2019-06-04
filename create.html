@@ -261,7 +261,34 @@
                     <td><input type="datetime" id="validity-not-after"/></td>
                 </tr>
             </table>
-
+	    <h2><br/>Key Usage</h2>
+	    <table>
+		    <tr>
+			<td><input type="checkbox" name="cert-ku" value="digitalsignature" checked />DigitalSignature</td>
+		    	<td><input type="checkbox" name="cert-ku" value="contentcommitment" />ContentCommitment</td>
+		        <td><input type="checkbox" name="cert-ku" value="keyencipherment" checked />keyEncipherment</td>
+                    </tr>
+		    <tr>
+		        <td><input type="checkbox" name="cert-ku" value="dataencipherment" />DataEncipherment</td>
+		        <td><input type="checkbox" name="cert-ku" value="keyagreement" />KeyAgreement</td>
+		    	<td><input type="checkbox" name="cert-ku" value="certsign" />CertSign</td>
+                    </tr>
+		    <tr>
+		        <td><input type="checkbox" name="cert-ku" value="crlsign" />CRLSign</td>
+		        <td><input type="checkbox" name="cert-ku" value="encipheronly" />EncipherOnly</td>
+		        <td><input type="checkbox" name="cert-ku" value="decipheronly" />DecipherOnly</td>
+                    </tr>
+            </table>
+	    <h2><br/>Extended Key Usage</h2>
+	    <table>
+		    <tr>
+			<td><input type="checkbox" name="cert-eku" value="any" />Any</td>
+		    	<td><input type="checkbox" name="cert-eku" value="serverauth" checked />ServerAuth</td>
+		        <td><input type="checkbox" name="cert-eku" value="clientauth" checked/>ClientAuth</td>
+		        <td><input type="checkbox" name="cert-eku" value="codesigning" />CodeSigning</td>
+		        <td><input type="checkbox" name="cert-eku" value="emailprotection" />EmailProtection</td>
+                    </tr>
+            </table>
             <a id="create-certificate" style="margin:20px 0px 0px" onClick="createCert()">Create Certificate</button></a>
         </section>
 

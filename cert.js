@@ -239,6 +239,28 @@ function createCert() {
         certinfo["subject-alt-name"] = strs
     }
 
+    var extKeyUsage = new Array();
+    var ekus = document.getElementsByName("cert-eku");
+    for (i = 0; i < ekus.length; i++) {
+        if (ekus[i].checked) {
+            extKeyUsage.push(ekus[i].value);
+        }
+    }
+    if (extKeyUsage.length > 0) {
+        certinfo["extendkeyusage"] = extKeyUsage
+    }
+
+    var keyUsage = new Array();
+    var kus = document.getElementsByName("cert-ku");
+    for (i = 0; i < kus.length; i++) {
+        if (kus[i].checked) {
+            keyUsage.push(kus[i].value);
+        }
+    }
+    if (keyUsage.length > 0) {
+        certinfo["keyusage"] = keyUsage;
+    }
+
     var ca = checkCACertificate();
 
     let sequence = Promise.resolve();

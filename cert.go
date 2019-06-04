@@ -157,12 +157,53 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
         isCA = certinfo.Get("isCA").Bool()
     }
 
+    eku := make([]x509.ExtKeyUsage, 0)
+    jseku := certinfo.Get("extendkeyusage")
+    if jseku != js.Undefined() {
+        m := map[string]x509.ExtKeyUsage{
+            "any":x509.ExtKeyUsageAny,
+	    "serverauth":x509.ExtKeyUsageServerAuth,
+            "clientauth":x509.ExtKeyUsageClientAuth,
+            "codesigning":x509.ExtKeyUsageCodeSigning,
+            "emailprotection":x509.ExtKeyUsageEmailProtection,
+        }
+        for i := 0; i < jseku.Length(); i++ {
+            value := jseku.Index(i).String()
+            if val, ok := m[value]; ok {
+                eku = append(eku, val)
+            }
+        }
+    }
+
+    var ku x509.KeyUsage
+    jsku := certinfo.Get("keyusage")
+    if jsku != js.Undefined() {
+        m := map[string]x509.KeyUsage {
+          "digitalsignature": x509.KeyUsageDigitalSignature,
+          "contentcommitment": x509.KeyUsageContentCommitment,
+          "keyencipherment": x509.KeyUsageKeyEncipherment,
+          "dataencipherment": x509.KeyUsageDataEncipherment,
+          "keyagreement": x509. KeyUsageKeyAgreement,
+          "certsign": x509.KeyUsageCertSign,
+          "crlsign": x509.KeyUsageCRLSign,
+          "encipheronly": x509.KeyUsageEncipherOnly,
+          "decipheronly": x509.KeyUsageDecipherOnly,
+        }
+        for i := 0; i < jsku.Length(); i++ {
+            value := jsku.Index(i).String()
+            if val, ok := m[value]; ok {
+                ku = ku | val
+            }
+        }
+    }
+
     template := &x509.Certificate{
         SerialNumber: big.NewInt(time.Now().Unix()),
         Subject: names,
         NotBefore: stime,
         NotAfter: etime,
-        KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+        KeyUsage: ku,
+        ExtKeyUsage: eku,
         BasicConstraintsValid: true,
         IsCA: isCA,
     }
