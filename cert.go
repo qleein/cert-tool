@@ -12,7 +12,6 @@ import (
     "math/big"
     "time"
     "net"
-    "encoding/asn1"
     "crypto/sha1"
 
     "github.com/pavel-v-chernykh/keystore-go"
@@ -97,14 +96,8 @@ func jks2pem(args []js.Value) {
 }
 
 func generateKeyId(pubkey *rsa.PublicKey) []byte {
-    spkiASN1 := x509.MarshalPKCS1PublicKey(pubkey)
-    var spki struct {
-        Algorithm        pkix.AlgorithmIdentifier
-        SubjectPublicKey asn1.BitString
-    }
-
-    asn1.Unmarshal(spkiASN1, &spki)
-    skid := sha1.Sum(spki.SubjectPublicKey.Bytes)
+    encoded := x509.MarshalPKCS1PublicKey(pubkey)
+    skid := sha1.Sum(encoded)
     return skid[:]
 }
 
@@ -211,6 +204,10 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
         }
     }
 
+    if isCA {
+        ku = x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign | x509.KeyUsageCRLSign
+        eku = []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth}
+    }
     template := &x509.Certificate{
         SerialNumber: big.NewInt(time.Now().Unix()),
         Subject: names,
