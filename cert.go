@@ -12,6 +12,8 @@ import (
     "math/big"
     "time"
     "net"
+    "encoding/asn1"
+    "crypto/sha1"
 
     "github.com/pavel-v-chernykh/keystore-go"
 )
@@ -94,7 +96,19 @@ func jks2pem(args []js.Value) {
     return
 }
 
-func newCert(args[] js.Value) (derCert, derPriv []byte){
+func generateKeyId(pubkey *rsa.PublicKey) []byte {
+    spkiASN1 := x509.MarshalPKCS1PublicKey(pubkey)
+    var spki struct {
+        Algorithm        pkix.AlgorithmIdentifier
+        SubjectPublicKey asn1.BitString
+    }
+
+    asn1.Unmarshal(spkiASN1, &spki)
+    skid := sha1.Sum(spki.SubjectPublicKey.Bytes)
+    return skid[:]
+}
+
+func newCert(args[]js.Value) (derCert, derPriv []byte){
     jsPKey := args[0]
     buf := make([]byte, jsPKey.Length())
     for i := 0; i < jsPKey.Length(); i++ {
@@ -206,6 +220,7 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
         ExtKeyUsage: eku,
         BasicConstraintsValid: true,
         IsCA: isCA,
+        SubjectKeyId: generateKeyId(&priv.PublicKey),
     }
 
     cacert := template
@@ -227,6 +242,7 @@ func newCert(args[] js.Value) (derCert, derPriv []byte){
             log.Fatal(err)
         }
         capriv = pkeyinterface.(*rsa.PrivateKey)
+        template.AuthorityKeyId = generateKeyId(&capriv.PublicKey)
     }
 
     altnames := certinfo.Get("subject-alt-name")
