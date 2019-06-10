@@ -261,6 +261,14 @@
                     <td><input type="datetime" id="validity-not-after"/></td>
                 </tr>
             </table>
+	    <h2><br/>CA Certficate</h2>
+        <table>
+            <tr><td>
+        <form>
+            <input type="radio" name="cert-isca" value="yes" ><label>YES</label>
+            <input type="radio" name="cert-isca" value="no" checked><label>NO</label>
+        </form></td></tr>
+        </table>
 	    <h2><br/>Key Usage</h2>
 	    <table>
 		    <tr>
@@ -289,6 +297,16 @@
 		        <td><input type="checkbox" name="cert-eku" value="emailprotection" />EmailProtection</td>
                     </tr>
             </table>
+	    <h2><br/>Certificate Algorithm</h2>
+        <table>
+            <tr><td>
+        <form>
+            <input type="radio" name="cert-algorithm" value="rsa" checked ><label>RSA-2048</label>
+            <input type="radio" name="cert-algorithm" value="ecdsa-p256" ><label>ECDSA-P256</label>
+            <input type="radio" name="cert-algorithm" value="ecdsa-p384" ><label>ECDSA-P384</label>
+            <input type="radio" name="cert-algorithm" value="ecdsa-p521" ><label>ECDSA-P521</label>
+        </form></td></tr>
+        </table>
             <a id="create-certificate" style="margin:20px 0px 0px" onClick="createCert()">Create Certificate</button></a>
         </section>
 

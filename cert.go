@@ -6,13 +6,16 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
     "encoding/pem"
+    "encoding/asn1"
     "syscall/js"
     "crypto/rsa"
+    "crypto/ecdsa"
     "crypto/rand"
     "math/big"
     "time"
     "net"
     "crypto/sha1"
+    "errors"
 
     "github.com/pavel-v-chernykh/keystore-go"
 )
@@ -94,11 +97,42 @@ func jks2pem(args []js.Value) {
 
     return
 }
-
-func generateKeyId(pubkey *rsa.PublicKey) []byte {
-    encoded := x509.MarshalPKCS1PublicKey(pubkey)
-    skid := sha1.Sum(encoded)
-    return skid[:]
+/*
+func generateKeyId(pubkey interface{}) []byte {
+    switch key := pubkey.(type) {
+    case *rsa.PublicKey:
+        encoded := x509.MarshalPKCS1PublicKey(pubkey)
+        skid := sha1.Sum(encoded)
+        return skid[:]
+    default:
+        return nil
+    }
+}
+*/
+func processPrivateKey(key interface{}) (pub, priv interface{}, keyid []byte, err error) {
+    switch key := key.(type) {
+    case *rsa.PrivateKey:
+        encoded := x509.MarshalPKCS1PublicKey(&key.PublicKey)
+        skid := sha1.Sum(encoded)
+        return key, &key.PublicKey, skid[:], nil
+    case *ecdsa.PrivateKey:
+        spkiASN1, err := x509.MarshalPKIXPublicKey(key.PublicKey)
+        if err != nil {
+            log.Fatal(err)
+        }
+        var spki struct {
+            Algorithm        pkix.AlgorithmIdentifier
+            SubjectPublicKey asn1.BitString
+        }
+        _, err = asn1.Unmarshal(spkiASN1, &spki)
+        if err != nil {
+            log.Fatal(err)
+        }
+        skid := sha1.Sum(spki.SubjectPublicKey.Bytes)
+        return key, &key.PublicKey, skid[:], nil
+    default:
+        return nil, nil, nil, errors.New("unsupported algorithm")
+    }
 }
 
 func newCert(args[]js.Value) (derCert, derPriv []byte){
@@ -111,9 +145,10 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
     if err != nil {
         log.Fatal(err)
     }
-    priv, ok := key.(*rsa.PrivateKey)
-    if !ok {
-        log.Fatal("only RSA privatekey is supported")
+
+    privkey, pubkey, keyid, err := processPrivateKey(key)
+    if err != nil {
+        log.Fatal(err)
     }
 
     certinfo := args[1]
@@ -217,11 +252,11 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
         ExtKeyUsage: eku,
         BasicConstraintsValid: true,
         IsCA: isCA,
-        SubjectKeyId: generateKeyId(&priv.PublicKey),
+        SubjectKeyId: keyid,
     }
 
     cacert := template
-    capriv := priv
+    capriv := interface{}(privkey)
     if len(args) >= 3 && args[2] != js.Undefined() {
         cainfo := args[2]
         pemCACert := cainfo.Get("cert").String()
@@ -238,8 +273,12 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
         if err != nil {
             log.Fatal(err)
         }
-        capriv = pkeyinterface.(*rsa.PrivateKey)
-        template.AuthorityKeyId = generateKeyId(&capriv.PublicKey)
+        caprivkey, _, cakeyid, err := processPrivateKey(pkeyinterface)
+        if err != nil {
+            log.Fatal(err)
+        }
+        capriv = caprivkey
+        template.AuthorityKeyId = cakeyid
     }
 
     altnames := certinfo.Get("subject-alt-name")
@@ -254,7 +293,7 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
         }
     }
 
-    derBytes, err := x509.CreateCertificate(rand.Reader, template, cacert, &priv.PublicKey, capriv)
+    derBytes, err := x509.CreateCertificate(rand.Reader, template, cacert, pubkey, capriv)
     if err != nil {
         log.Fatal(err)
     }

@@ -262,17 +262,53 @@ function createCert() {
     }
 
     var ca = checkCACertificate();
+    var certtype = "rsa"
+    var elems = document.getElementsByName("cert-algorithm");
 
-    let sequence = Promise.resolve();
-    sequence = sequence.then(() => {
-
-        return crypto.subtle.generateKey(
-            {
+    var params = {
                 name: "RSASSA-PKCS1-v1_5",
                 modulusLength: 2048,
                 publicExponent: new Uint8Array([1, 0, 1]),
                 hash: "SHA-256",
-            },
+    };
+    for (i = 0; i < elems.length; i++) {
+        if (!elems[i].checked) {
+            continue;
+        }
+        if (elems[i].value == "ecdsa-p256") {
+            params = {
+                name: "ECDSA",
+                namedCurve: "P-256"
+            }
+        } else if (elems[i].value == "ecdsa-p384") {
+            params = {
+                name: "ECDSA",
+                namedCurve: "P-384"
+            }
+        } else if (elems[i].value == "ecdsa-p521") {
+            params = {
+                name: "ECDSA",
+                namedCurve: "P-521"
+            }
+        }
+    }
+
+    var elems = document.getElementsByName("cert-isca");
+    for (i = 0; i < elems.length; i++) {
+        if (!elems[i].checked) {
+            continue;
+        }
+        if (elems[i].value == "yes") {
+            certinfo["isCA"] = true;
+        } else {
+            certinfo["isCA"] = false;
+        }
+    }
+    
+    let sequence = Promise.resolve();
+    sequence = sequence.then(() => {
+        return crypto.subtle.generateKey(
+            params,
             true,
             ["sign", "verify"]
         );
