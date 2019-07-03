@@ -116,7 +116,7 @@ func processPrivateKey(key interface{}) (pub, priv interface{}, keyid []byte, er
         skid := sha1.Sum(encoded)
         return key, &key.PublicKey, skid[:], nil
     case *ecdsa.PrivateKey:
-        spkiASN1, err := x509.MarshalPKIXPublicKey(key.PublicKey)
+        spkiASN1, err := x509.MarshalPKIXPublicKey(&key.PublicKey)
         if err != nil {
             log.Fatal(err)
         }
@@ -145,12 +145,13 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
     if err != nil {
         log.Fatal(err)
     }
-
+    log.Println("come here1")
     privkey, pubkey, keyid, err := processPrivateKey(key)
     if err != nil {
         log.Fatal(err)
     }
 
+    log.Println("come here2")
     certinfo := args[1]
 
     names := pkix.Name{}
@@ -258,6 +259,7 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
     cacert := template
     capriv := interface{}(privkey)
     if len(args) >= 3 && args[2] != js.Undefined() {
+    log.Println("come here3")
         cainfo := args[2]
         pemCACert := cainfo.Get("cert").String()
         pemCAPkey := cainfo.Get("pkey").String()
@@ -280,6 +282,7 @@ func newCert(args[]js.Value) (derCert, derPriv []byte){
         capriv = caprivkey
         template.AuthorityKeyId = cakeyid
     }
+    log.Println("come here4")
 
     altnames := certinfo.Get("subject-alt-name")
     if altnames != js.Undefined() {
